@@ -23,7 +23,7 @@ public class AccountACL {
     }
 
     public boolean canEdit(User user){
-        return Objects.equals(this.account.getId(), user.getId()) || Objects.equals(user.getRole(), Role.ADMIN);
+        return Objects.equals(this.account.getCreatorId(), user.getId()) || Objects.equals(user.getRole(), Role.ADMIN);
     }
 
     public boolean canDelete(User user){

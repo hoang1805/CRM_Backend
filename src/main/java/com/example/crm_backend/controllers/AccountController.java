@@ -35,7 +35,7 @@ public class AccountController {
         this.user_service = user_service;
     }
 
-    @GetMapping("/get.list")
+    @GetMapping("/list")
     public ResponseEntity<Object> getAccounts(@RequestParam(defaultValue = "10") int ipp, @RequestParam(defaultValue = "0") int page, HttpServletRequest request){
         User current_user = SessionHelper.getSessionUser(request, user_service);
         if (current_user == null) {
