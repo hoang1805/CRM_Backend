@@ -55,7 +55,7 @@ public class AccountController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<Object> getAccounts(@RequestParam(defaultValue = "10") int ipp, @RequestParam(defaultValue = "0") int page, HttpServletRequest request){
+    public ResponseEntity<Object> getAccounts(@RequestParam(defaultValue = "10") int ipp, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String query, @RequestParam(defaultValue = "0") int relationship_id, HttpServletRequest request){
         User current_user = SessionHelper.getSessionUser(request, user_service);
         if (current_user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
@@ -63,9 +63,10 @@ public class AccountController {
 
         Page<Account> accounts = null;
         if (Objects.equals(current_user.getRole(), Role.ADMIN)) {
-            accounts = account_service.paginate(ipp, page);
+            accounts = account_service.paginate(ipp, page, query, relationship_id);
         } else {
-            accounts = account_service.paginate(ipp, page, current_user);
+            accounts = account_service.paginate(ipp, page, query, relationship_id);
+//            accounts = account_service.paginate(ipp, page, query, relationship_id, current_user);
         }
         Page<AccountDTO> data = accounts.map(account -> account.release(current_user));
 

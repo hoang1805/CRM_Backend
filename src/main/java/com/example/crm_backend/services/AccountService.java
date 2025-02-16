@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +45,12 @@ public class AccountService {
     public Page<Account> paginate(int ipp, int page, User user){
         Pageable request = PageRequest.of(page, ipp, Sort.by(Sort.Direction.DESC, "id"));
         return account_repository.findAllByUser(user.getId(), request);
+    }
+
+    public Page<Account> paginate(int ipp, int page, String query, int relationship_id ){
+        Pageable request = PageRequest.of(page, ipp, Sort.by(Sort.Direction.DESC, "id"));
+
+        return account_repository.searchAccounts(query, (long) relationship_id, request);
     }
 
     public Account createAccount(AccountDTO data, User creator) {
