@@ -119,8 +119,9 @@ public class AccountDTO {
         return birthday;
     }
 
-    public void setBirthday(Long birthday) {
+    public AccountDTO setBirthday(Long birthday) {
         this.birthday = birthday;
+        return this;
     }
 
     public Gender getGender() {

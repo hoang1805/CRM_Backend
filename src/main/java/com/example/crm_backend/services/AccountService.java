@@ -15,8 +15,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class AccountService {
@@ -80,5 +82,56 @@ public class AccountService {
             return false;
         }
         return user_repository.existsById(user_id);
+    }
+
+    @Transactional
+    public void deleteAccounts(List<Long> ids) {
+//        List<Account> accounts = account_repository.findAllById(ids);
+//        for (Account account : accounts) {
+//            account_repository.delete(account);
+//        }
+        account_repository.deleteAllByIdInBatch(ids);
+    }
+
+    public List<Account> getByIds(List<Long> ids) {
+        return account_repository.findAllById(ids);
+    }
+
+    public Account getAccount(Long id) {
+        return account_repository.getReferenceById(id);
+    }
+
+    public Account edit(Long account_id, AccountDTO account_dto) {
+        Account account = getAccount(account_id);
+        if (account == null) {
+            throw new IllegalStateException("Invalid account. Please try again");
+        }
+
+        Account new_account = new Account();
+        ObjectMapper.mapAll(account_dto, new_account);
+        if (!Objects.equals(account.getCode(), new_account.getCode()) && isExist(new_account)) {
+            throw new IllegalStateException("Account code has been already existed. Please try again");
+        }
+        account.setName(new_account.getName());
+        account.setPhone(new_account.getPhone());
+        account.setCode(new_account.getCode());
+        account.setGender(new_account.getGender());
+        account.setEmail(new_account.getEmail());
+        account.setAssignedUserId(new_account.getAssignedUserId());
+        account.setBirthday(new_account.getBirthday());
+        account.setJob(new_account.getJob());
+        account.setSourceId(new_account.getSourceId());
+        account.setReferrerId(new_account.getReferrerId());
+        account.setRelationshipId(new_account.getRelationshipId());
+
+        try {
+            AccountValidator validator = new AccountValidator(account, this);
+            validator.validate();
+            account.setLastUpdate(Timer.now());
+        } catch (Exception e) {
+            throw new IllegalStateException(e.getMessage());
+        }
+
+        return account_repository.save(account);
     }
 }

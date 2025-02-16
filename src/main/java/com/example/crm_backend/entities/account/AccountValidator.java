@@ -6,6 +6,7 @@ import com.example.crm_backend.utils.Validator;
 
 public class AccountValidator extends Validator {
     private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+    private static final String PHONE_REGEX = "^(0[3|5|7|8|9])([0-9]{8})$";
 
     private Account account;
 
@@ -24,6 +25,19 @@ public class AccountValidator extends Validator {
         return this;
     }
 
+    public AccountValidator validPhone(){
+        String phone = account.getPhone();
+        if (phone == null || phone.isEmpty()) {
+            return this;
+        }
+
+        if (!AccountValidator.isValidStr(account.getPhone(), PHONE_REGEX)) {
+            throw new IllegalStateException("Invalid phone");
+        }
+
+        return this;
+    }
+
     public void validate(){
         if (account.getName().isEmpty()) {
             throw new IllegalStateException("Account name is empty. Please try again");
@@ -33,18 +47,18 @@ public class AccountValidator extends Validator {
             throw new IllegalStateException("Account code is empty. Please try again");
         }
 
-        validEmail();
+        validEmail().validPhone();
 
         if (account.getId() == null && account_service.isExist(account)) {
             throw new IllegalStateException("Account code has already existed");
         }
 
         if (account.getReferrerId() == null) {
-            throw new IllegalStateException("Reffer field is empty. Please try again");
+            throw new IllegalStateException("Referrer field is empty. Please try again");
         }
 
         if (!account_service.isValidUser(account.getReferrerId())) {
-            throw new IllegalStateException("Invalid reffer. Please try again");
+            throw new IllegalStateException("Invalid referrer. Please try again");
         }
 
         Long assigned_id = account.getAssignedUserId();
@@ -59,7 +73,5 @@ public class AccountValidator extends Validator {
         if (account.getBirthday() > Timer.now()) {
             throw new IllegalStateException("Invalid birthday. Please try again");
         }
-
-
     }
 }

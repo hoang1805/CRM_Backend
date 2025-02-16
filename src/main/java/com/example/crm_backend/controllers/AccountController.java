@@ -35,6 +35,25 @@ public class AccountController {
         this.user_service = user_service;
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getAccount(@PathVariable("id") Long id, HttpServletRequest request) {
+        User current_user = SessionHelper.getSessionUser(request, user_service);
+        if (current_user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
+        }
+
+        Account account = account_service.getAccount(id);
+        if (account == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Account not found"));
+        }
+
+        if (!account.acl().canView(current_user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have access"));
+        }
+
+        return ResponseEntity.ok(Map.of("account", account.release(current_user)));
+    }
+
     @GetMapping("/list")
     public ResponseEntity<Object> getAccounts(@RequestParam(defaultValue = "10") int ipp, @RequestParam(defaultValue = "0") int page, HttpServletRequest request){
         User current_user = SessionHelper.getSessionUser(request, user_service);
@@ -50,12 +69,11 @@ public class AccountController {
         }
         Page<AccountDTO> data = accounts.map(account -> account.release(current_user));
 
-        return ResponseEntity.ok(Map.of("data", facet(data)));
+        return ResponseEntity.ok(facet(data));
     }
 
     @PostMapping("/create")
     public ResponseEntity<Object> createAccount(@RequestBody AccountDTO accountDTO, HttpServletRequest request){
-        System.out.println(accountDTO);
         User current_user = SessionHelper.getSessionUser(request, user_service);
         if (current_user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
@@ -66,6 +84,54 @@ public class AccountController {
             return ResponseEntity.ok(Map.of("account", account.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/edit/{id}")
+    public ResponseEntity<Object> editAccount(@RequestBody AccountDTO account_DTO, @PathVariable Long id, HttpServletRequest request) {
+        User current_user = SessionHelper.getSessionUser(request, user_service);
+        if (current_user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
+        }
+
+        Account account = account_service.getAccount(id);
+        if (account == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Account not found"));
+        }
+
+        if(!account.acl().canEdit(current_user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+        }
+
+        try {
+            Account edited = account_service.edit(id, account_DTO);
+            return ResponseEntity.ok(Map.of("account", edited.release(current_user)));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/delete.many")
+    public ResponseEntity<Object> deleteAccounts(@RequestBody List<Long> ids, HttpServletRequest request) {
+        User current_user = SessionHelper.getSessionUser(request, user_service);
+        if (current_user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
+        }
+
+        List<Account> accounts = account_service.getByIds(ids);
+        for (Account account: accounts) {
+            if (!account.acl().canDelete(current_user)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            }
+        }
+
+
+        try {
+            account_service.deleteAccounts(ids);
+            return ResponseEntity.ok("Xóa thành công!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Lỗi khi xóa: " + e.getMessage());
         }
     }
 
