@@ -42,6 +42,16 @@ public class UserController {
         return ResponseEntity.ok(Map.of("data", data));
     }
 
+    @GetMapping("")
+    public ResponseEntity<Object> getCurrentUser(HttpServletRequest request) {
+        User current_user = SessionHelper.getSessionUser(request, user_service);
+        if (current_user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
+        }
+
+        return ResponseEntity.ok(Map.of("user", current_user.release()));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Object> getUser(@PathVariable("id") Long id, HttpServletRequest request){
         User current_user = SessionHelper.getSessionUser(request, user_service);
