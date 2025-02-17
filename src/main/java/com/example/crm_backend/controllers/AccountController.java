@@ -112,6 +112,31 @@ public class AccountController {
         }
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Object> deleteAccount(@PathVariable Long id, HttpServletRequest request) {
+        User current_user = SessionHelper.getSessionUser(request, user_service);
+        if (current_user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
+        }
+
+        Account account = account_service.getAccount(id);
+        if (account == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Account not found"));
+        }
+
+        if (!account.acl().canDelete(current_user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+        }
+
+        try {
+            account_service.deleteAccount(id);
+            return ResponseEntity.ok("Xóa thành công!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Lỗi khi xóa: " + e.getMessage());
+        }
+    }
+
     @DeleteMapping("/delete.many")
     public ResponseEntity<Object> deleteAccounts(@RequestBody List<Long> ids, HttpServletRequest request) {
         User current_user = SessionHelper.getSessionUser(request, user_service);

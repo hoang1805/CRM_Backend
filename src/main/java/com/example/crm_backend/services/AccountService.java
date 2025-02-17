@@ -141,4 +141,8 @@ public class AccountService {
 
         return account_repository.save(account);
     }
+
+    public void deleteAccount(Long id) {
+        account_repository.deleteById(id);
+    }
 }
