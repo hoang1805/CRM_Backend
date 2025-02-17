@@ -140,6 +140,10 @@ public class Account implements Releasable<AccountDTO> {
     }
 
     public void setGender(Gender gender) {
+        if (gender == null) {
+            this.gender = Gender.OTHER;
+            return ;
+        }
         this.gender = gender;
     }
 
@@ -233,7 +237,7 @@ public class Account implements Releasable<AccountDTO> {
     @Override
     public AccountDTO release(User session_user) {
         AccountDTO account_DTO = new AccountDTO();
-        account_DTO.setId(id).setName(name).setGender(gender != null ? gender : Gender.OTHER)
+        account_DTO.setId(id).setName(name).setGender(gender != null ? gender : Gender.OTHER).setBirthday(birthday)
                 .setPhone(phone).setEmail(email).setCode(code).setAssignedUserId(assigned_user_id).setJob(job)
                 .setSourceId(source_id).setRelationshipId(relationship_id).setReferrerId(referrer_id)
                 .setCreatorId(creator_id).setCreatedAt(created_at).setLastUpdate(last_update);
