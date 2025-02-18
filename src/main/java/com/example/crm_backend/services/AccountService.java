@@ -56,12 +56,8 @@ public class AccountService {
     public Account createAccount(AccountDTO data, User creator) {
         Account account = new Account();
         ObjectMapper.mapAll(data, account);
-        try {
-            AccountValidator validator = new AccountValidator(account, this);
-            validator.validate();
-        } catch (Exception e) {
-            throw e;
-        }
+        AccountValidator validator = new AccountValidator(account, this);
+        validator.validate();
 
         account.setCreatorId(creator.getId());
         account.setLastUpdate(Timer.now());

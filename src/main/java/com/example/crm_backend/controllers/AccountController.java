@@ -168,8 +168,8 @@ public class AccountController {
                 .collect(Collectors.toMap(User::getId, User::releaseCompact));
 
         return data.map(account -> {
-            account.setCreatorExport(map.get(account.getCreatorId()));
-            account.setUserExport(map.get(account.getAssignedUserId()));
+//            account.setCreatorExport(map.get(account.getCreatorId()));
+//            account.setUserExport(map.get(account.getAssignedUserId()));
             return account;
         });
     }
