@@ -161,6 +161,17 @@ public class AccountController {
         }
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<Object> search(@RequestParam String query, HttpServletRequest request) {
+        User current_user = SessionHelper.getSessionUser(request, user_service);
+        if (current_user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
+        }
+
+        List<Account> accounts = account_service.searchAccounts(query);
+        return ResponseEntity.ok(accounts.stream().map(Account::releaseCompact).collect(Collectors.toList()));
+    }
+
     private Page<AccountDTO> facet(Page<AccountDTO> data) {
         List<Long> user_ids = data.stream().flatMap(account -> Stream.of(account.getAssignedUserId(), account.getCreatorId())).filter(Objects::nonNull).toList();
         List<User> users = user_service.loadUsers(user_ids);

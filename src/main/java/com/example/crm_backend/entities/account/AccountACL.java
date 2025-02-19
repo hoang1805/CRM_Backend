@@ -6,7 +6,7 @@ import com.example.crm_backend.enums.Role;
 import java.util.Objects;
 
 public class AccountACL {
-    private Account account;
+    private final Account account;
 
     public AccountACL(Account account){
         this.account = account;

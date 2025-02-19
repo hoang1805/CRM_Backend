@@ -53,6 +53,10 @@ public class AccountService {
         return account_repository.searchAccounts(query, (long) relationship_id, request);
     }
 
+    public List<Account> searchAccounts(String query) {
+        return account_repository.searchAccounts(query, 20L);
+    }
+
     public Account createAccount(AccountDTO data, User creator) {
         Account account = new Account();
         ObjectMapper.mapAll(data, account);
