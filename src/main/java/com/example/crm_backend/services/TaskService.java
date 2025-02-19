@@ -101,7 +101,7 @@ public class TaskService {
         task.setNote(dto.getNote());
         task.setDescription(dto.getDescription());
 
-        if (Objects.equals(user.getId(), task.getManagerId())) {
+        if (Objects.equals(user.getId(), task.getManagerId()) || Objects.equals(user.getId(), task.getCreatorId())) {
             task.setName(dto.getName());
             task.setProject(dto.getProject());
             task.setStartDate(dto.getStartDate());

@@ -73,7 +73,7 @@ public class RelationshipController {
         }
 
         try {
-            Relationship relationship = relationship_service.editColor(id, relationship_DTO);
+            Relationship relationship = relationship_service.edit(id, relationship_DTO);
             return ResponseEntity.ok(Map.of("relationship", relationship.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));

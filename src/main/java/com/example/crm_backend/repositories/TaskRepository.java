@@ -12,14 +12,15 @@ import org.springframework.stereotype.Repository;
 public interface
 TaskRepository extends JpaRepository<Task, Long> {
     @Query(value = "SELECT * FROM tasks " +
-            "WHERE :account_id = account_id" +
-            "(:query IS NULL OR :query = '' OR MATCH(name, project) AGAINST (:query IN NATURAL LANGUAGE MODE)) " +
+            "WHERE account_id = :account_id " +
+            "AND (:query IS NULL OR :query = '' OR MATCH(name, project) AGAINST (:query IN NATURAL LANGUAGE MODE)) " +
             "AND (:manager_id = 0 OR manager_id = :manager_id) " +
             "AND (:participant_id = 0 OR participant_id = :participant_id) " +
             "AND (:status = 0 OR status = :status) " +
             "ORDER BY id DESC",
             countQuery = "SELECT COUNT(*) FROM tasks " +
-                    "WHERE (:query IS NULL OR :query = '' OR MATCH(name, project) AGAINST (:query IN NATURAL LANGUAGE MODE)) " +
+                    "WHERE account_id = :account_id " +
+                    "AND (:query IS NULL OR :query = '' OR MATCH(name, project) AGAINST (:query IN NATURAL LANGUAGE MODE)) " +
                     "AND (:manager_id = 0 OR manager_id = :manager_id) " +
                     "AND (:participant_id = 0 OR participant_id = :participant_id) " +
                     "AND (:status = 0 OR status = :status) ",

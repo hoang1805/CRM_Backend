@@ -34,7 +34,6 @@ public class TaskACL {
     }
 
     public boolean canReview(User user) {
-        return Objects.equals(user.getId(), task.getManagerId())
-                || Objects.equals(user.getId(), task.getCreatorId());
+        return Objects.equals(user.getId(), task.getManagerId());
     }
 }
