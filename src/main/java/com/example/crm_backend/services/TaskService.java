@@ -163,7 +163,7 @@ public class TaskService {
             throw new IllegalStateException("You can not approve this task when the status is not pending approval");
         }
 
-        task.setStatus((long) Task.PENDING_APPROVAL);
+        task.setStatus((long) Task.APPROVED);
 
         return task_repository.save(task);
     }

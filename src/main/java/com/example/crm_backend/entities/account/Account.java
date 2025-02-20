@@ -1,6 +1,7 @@
 package com.example.crm_backend.entities.account;
 
 import com.example.crm_backend.dtos.AccountDTO;
+import com.example.crm_backend.entities.Exportable;
 import com.example.crm_backend.entities.Releasable;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.enums.Gender;
@@ -10,7 +11,7 @@ import java.util.Map;
 
 @Entity
 @Table(name = "accounts")
-public class Account implements Releasable<AccountDTO> {
+public class Account implements Releasable<AccountDTO>, Exportable {
     @Id
     @GeneratedValue(
             strategy = GenerationType.IDENTITY
@@ -250,5 +251,13 @@ public class Account implements Releasable<AccountDTO> {
         }
 
         return account_DTO;
+    }
+
+    @Override
+    public Map<String, Object> export() {
+        return Map.of(
+                "id", getId(),
+                "name", "account"
+        );
     }
 }

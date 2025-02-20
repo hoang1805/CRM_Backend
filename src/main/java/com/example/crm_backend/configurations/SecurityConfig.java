@@ -33,7 +33,7 @@ import java.util.function.Supplier;
 @Configuration
 public class SecurityConfig {
 
-    public final String CLIENT_SERVER = "http://localhost:3000";
+    public static final String CLIENT_SERVER = "http://localhost:3000";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomAuthenticationProvider custom_authentication_provider) throws Exception {
