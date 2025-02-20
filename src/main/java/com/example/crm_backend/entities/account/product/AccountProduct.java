@@ -22,6 +22,8 @@ public class AccountProduct implements Releasable<AccountProductDTO> {
 
     private String name;
 
+    private String category;
+
     private String description;
 
     private Long quantity;
@@ -49,9 +51,10 @@ public class AccountProduct implements Releasable<AccountProductDTO> {
 
     public AccountProduct() {}
 
-    public AccountProduct(Long id, String name, String description, Long quantity, Float price, Float discount, Float tax, Long accountId, Long creatorId, Long createdAt, Long lastUpdate) {
+    public AccountProduct(Long id, String name, String category, String description, Long quantity, Float price, Float discount, Float tax, Long accountId, Long creatorId, Long createdAt, Long lastUpdate) {
         this.id = id;
         this.name = name;
+        this.category = category;
         this.description = description;
         this.quantity = quantity;
         this.price = price;
@@ -63,8 +66,9 @@ public class AccountProduct implements Releasable<AccountProductDTO> {
         this.lastUpdate = lastUpdate;
     }
 
-    public AccountProduct(String name, String description, Long quantity, Float price, Float discount, Float tax, Long accountId, Long creatorId, Long createdAt, Long lastUpdate) {
+    public AccountProduct(String name, String category, String description, Long quantity, Float price, Float discount, Float tax, Long accountId, Long creatorId, Long createdAt, Long lastUpdate) {
         this.name = name;
+        this.category = category;
         this.description = description;
         this.quantity = quantity;
         this.price = price;
@@ -76,11 +80,15 @@ public class AccountProduct implements Releasable<AccountProductDTO> {
         this.lastUpdate = lastUpdate;
     }
 
-    public float getTotal() {
-        float total = this.price * this.quantity;
-        float discount = total * this.discount / 100;
+    public double getTotal() {
+        double price = 1.0 * this.price;
+        double quantity = 1.0 * this.quantity;
+        double d_discount = 1.0 * this.discount;
+        double d_tax = 1.0 * this.tax;
+        double total = 1.0 * price * quantity;
+        double discount = 1.0 * total * d_discount / 100.0;
         total -= discount;
-        float tax = total * this.tax / 100;
+        double tax = 1.0 * total * d_tax / 100.0;
         return total + tax;
     }
 
@@ -94,7 +102,7 @@ public class AccountProduct implements Releasable<AccountProductDTO> {
     @Override
     public AccountProductDTO release(User session_user) {
         AccountProductDTO dto = new AccountProductDTO();
-        dto.setId(id).setName(name).setDescription(description).setQuantity(quantity)
+        dto.setId(id).setName(name).setCategory(category).setDescription(description).setQuantity(quantity)
                 .setPrice(price).setDiscount(discount).setTax(tax).setTotal(getTotal())
                 .setAccountId(accountId).setCreatorId(creatorId).setCreatedAt(createdAt)
                 .setLastUpdate(lastUpdate);

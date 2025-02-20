@@ -1,7 +1,6 @@
 package com.example.crm_backend.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -18,6 +17,8 @@ public class AccountProductDTO {
 
     private String name;
 
+    private String category;
+
     private String description;
 
     @JsonProperty("quantity")
@@ -32,7 +33,7 @@ public class AccountProductDTO {
     @JsonProperty("tax")
     private Float tax;
 
-    private Float total;
+    private Double total;
 
     @JsonProperty("account_id")
     private Long accountId;
@@ -51,9 +52,10 @@ public class AccountProductDTO {
     public AccountProductDTO() {
     }
 
-    public AccountProductDTO(Long id, String name, String description, Long quantity, Float price, Float discount, Float tax, Long accountId, Long creatorId, Long createdAt, Long lastUpdate) {
+    public AccountProductDTO(Long id, String name, String category, String description, Long quantity, Float price, Float discount, Float tax, Long accountId, Long creatorId, Long createdAt, Long lastUpdate) {
         this.id = id;
         this.name = name;
+        this.category = category;
         this.description = description;
         this.quantity = quantity;
         this.price = price;

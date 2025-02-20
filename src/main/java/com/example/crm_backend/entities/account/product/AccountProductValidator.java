@@ -21,6 +21,14 @@ public class AccountProductValidator extends Validator {
         return this;
     }
 
+    public AccountProductValidator validCategory() {
+        if (account_product.getCategory() == null || account_product.getCategory().isEmpty()) {
+            throw new IllegalStateException("Category is empty. Please try again");
+        }
+
+        return this;
+    }
+
     public AccountProductValidator validPrice() {
         if (account_product.getPrice() == null || account_product.getPrice() <= 0) {
             throw new IllegalStateException("Invalid price. Please try again");
@@ -66,6 +74,6 @@ public class AccountProductValidator extends Validator {
     }
 
     public void validate() {
-        validName().validPrice().validTax().validDiscount().validAccount().validQuantity();
+        validName().validPrice().validTax().validCategory().validDiscount().validAccount().validQuantity();
     }
 }

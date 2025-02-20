@@ -9,7 +9,13 @@ import com.example.crm_backend.repositories.AccountRepository;
 import com.example.crm_backend.utils.ObjectMapper;
 import com.example.crm_backend.utils.Timer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
 public class AccountProductService {
@@ -71,6 +77,8 @@ public class AccountProductService {
         ap.setName(dto.getName());
         ap.setDescription(dto.getDescription());
 
+        ap.setCategory(dto.getCategory());
+
         if (dto.getPrice() != null) {
             ap.setPrice(dto.getPrice());
         }
@@ -106,16 +114,33 @@ public class AccountProductService {
         account_product_repository.deleteById(id);
     }
 
-    public AccountProduct duplicate(Long id) {
+    public AccountProduct duplicate(Long id, User user) {
         AccountProduct ap = getById(id);
         if (ap == null) {
             throw new IllegalStateException("Invalid account product. Please try again");
         }
 
-        ap.setId(null);
-        ap.setLastUpdate(Timer.now());
-        ap.setCreatedAt(Timer.now());
+        AccountProduct duplicate = new AccountProduct();
 
-        return account_product_repository.save(ap);
+        duplicate.setName(ap.getName());
+        duplicate.setDescription(ap.getDescription());
+        duplicate.setCategory(ap.getCategory());
+        duplicate.setPrice(ap.getPrice());
+        duplicate.setQuantity(ap.getQuantity());
+        duplicate.setDiscount(ap.getDiscount());
+        duplicate.setTax(ap.getTax());
+        duplicate.setCreatorId(user.getId());
+        duplicate.setAccountId(ap.getAccountId());
+        duplicate.setLastUpdate(Timer.now());
+        duplicate.setCreatedAt(Timer.now());
+
+        return account_product_repository.save(duplicate);
+    }
+
+
+    public Page<AccountProduct> paginate(int ipp, int page, String account_id, String query, Long start, Long end) {
+        Pageable request = PageRequest.of(page, ipp, Sort.by(DESC, "id"));
+
+        return account_product_repository.searchProducts(account_id, query, start, end, request);
     }
 }

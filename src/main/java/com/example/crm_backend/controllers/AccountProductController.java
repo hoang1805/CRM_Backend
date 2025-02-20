@@ -8,6 +8,7 @@ import com.example.crm_backend.services.UserService;
 import com.example.crm_backend.utils.SessionHelper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -117,11 +118,24 @@ public class AccountProductController {
         }
 
         try {
-            AccountProduct ap = account_product_service.duplicate(id);
+            AccountProduct ap = account_product_service.duplicate(id, current_user);
             return ResponseEntity.ok(Map.of("account_product", ap.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
         }
+    }
+
+    @GetMapping("/list/{account_id}")
+    public ResponseEntity<Object> search(@RequestParam String query, @RequestParam Long start, @RequestParam Long end, @RequestParam Long page, @RequestParam Long ipp, HttpServletRequest request, @PathVariable String account_id){
+        User current_user = SessionHelper.getSessionUser(request, user_service);
+        if (current_user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
+        }
+
+        Page<AccountProduct> aps = account_product_service.paginate(Math.toIntExact(ipp), Math.toIntExact(page), account_id, query, start, end);
+        Page<AccountProductDTO> data = aps.map(ap -> ap.release(current_user));
+
+        return ResponseEntity.ok(data);
     }
 
 }
