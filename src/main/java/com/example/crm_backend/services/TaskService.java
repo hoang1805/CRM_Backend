@@ -208,4 +208,9 @@ public class TaskService {
 
         return task_repository.save(task);
     }
+
+    public Page<Task> getTaskList(int ipp, int page, String query, Long manager_id, Long participant_id, Long status) {
+        Pageable request = PageRequest.of(page, ipp, Sort.by(Sort.Direction.DESC, "id"));
+        return task_repository.searchTasks(query, manager_id, participant_id, status, request);
+    }
 }

@@ -52,6 +52,9 @@ public class TaskDTO {
     @JsonProperty("last_update")
     private Long lastUpdate;
 
+    @JsonProperty("account_export")
+    private AccountDTO accountExport = null;
+
     private Map<String, Boolean> acl = new HashMap<>();
 
     public TaskDTO() {

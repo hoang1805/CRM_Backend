@@ -145,4 +145,9 @@ public class AccountService {
     public void deleteAccount(Long id) {
         account_repository.deleteById(id);
     }
+
+    public List<Account> loadAccounts(List<Long> account_ids) {
+        account_ids = account_ids.stream().distinct().collect(java.util.stream.Collectors.toList());
+        return account_repository.findAllById(account_ids);
+    }
 }

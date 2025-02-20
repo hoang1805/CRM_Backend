@@ -1,9 +1,12 @@
 package com.example.crm_backend.controllers;
 
+import com.example.crm_backend.dtos.AccountDTO;
 import com.example.crm_backend.dtos.TaskDTO;
+import com.example.crm_backend.entities.account.Account;
 import com.example.crm_backend.entities.task.Task;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.enums.Role;
+import com.example.crm_backend.services.AccountService;
 import com.example.crm_backend.services.TaskService;
 import com.example.crm_backend.services.UserService;
 import com.example.crm_backend.utils.SessionHelper;
@@ -14,8 +17,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping(path = "api/task")
@@ -24,10 +30,13 @@ public class TaskController {
 
     private final TaskService task_service;
 
+    private final AccountService account_service;
+
     @Autowired
-    public TaskController(UserService user_service, TaskService task_service) {
+    public TaskController(UserService user_service, TaskService task_service, AccountService accountService) {
         this.user_service = user_service;
         this.task_service = task_service;
+        account_service = accountService;
     }
 
     @GetMapping("/{id}")
@@ -64,6 +73,32 @@ public class TaskController {
         Page<TaskDTO> data = tasks.map(task -> task.release(current_user));
 
         return ResponseEntity.ok(data);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<Object> getTasks(@RequestParam(defaultValue = "10") int ipp, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "") String query, @RequestParam(defaultValue = "0") Long manager_id, @RequestParam(defaultValue = "0") Long participant_id, @RequestParam(defaultValue = "0") Long status, HttpServletRequest request) {
+        User current_user = SessionHelper.getSessionUser(request, user_service);
+        if (current_user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
+        }
+
+
+        Page<Task> tasks = task_service.getTaskList(ipp, page, query, manager_id, participant_id, status);
+        Page<TaskDTO> data = tasks.map(task -> task.release(current_user));
+
+        return ResponseEntity.ok(facet(data));
+    }
+
+    private Page<TaskDTO> facet(Page<TaskDTO> data) {
+        List<Long> account_ids = data.stream().flatMap(taskDTO -> Stream.of(taskDTO.getAccountId())).filter(Objects::nonNull).toList();
+        List<Account> accounts = account_service.loadAccounts(account_ids);
+        Map<Long, AccountDTO> map = accounts.stream()
+                .collect(Collectors.toMap(Account::getId, Account::releaseCompact));
+
+        return data.map(task -> {
+            task.setAccountExport(map.get(task.getAccountId()));
+            return task;
+        });
     }
 
     @PostMapping("/create")
