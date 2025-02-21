@@ -1,12 +1,12 @@
 package com.example.crm_backend.controllers;
 
-import com.example.crm_backend.dtos.AccountDTO;
+import com.example.crm_backend.dtos.account.AccountDTO;
 import com.example.crm_backend.dtos.TaskDTO;
 import com.example.crm_backend.entities.account.Account;
 import com.example.crm_backend.entities.task.Task;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.enums.Role;
-import com.example.crm_backend.services.AccountService;
+import com.example.crm_backend.services.account.AccountService;
 import com.example.crm_backend.services.TaskService;
 import com.example.crm_backend.services.UserService;
 import com.example.crm_backend.utils.SessionHelper;

@@ -1,6 +1,6 @@
 package com.example.crm_backend.entities.account.product;
 
-import com.example.crm_backend.services.AccountProductService;
+import com.example.crm_backend.services.account.AccountProductService;
 import com.example.crm_backend.utils.Validator;
 
 public class AccountProductValidator extends Validator {

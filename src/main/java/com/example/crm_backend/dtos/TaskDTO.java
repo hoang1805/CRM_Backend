@@ -1,5 +1,6 @@
 package com.example.crm_backend.dtos;
 
+import com.example.crm_backend.dtos.account.AccountDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;

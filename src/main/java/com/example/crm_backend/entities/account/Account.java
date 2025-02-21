@@ -1,6 +1,6 @@
 package com.example.crm_backend.entities.account;
 
-import com.example.crm_backend.dtos.AccountDTO;
+import com.example.crm_backend.dtos.account.AccountDTO;
 import com.example.crm_backend.entities.Exportable;
 import com.example.crm_backend.entities.Releasable;
 import com.example.crm_backend.entities.user.User;

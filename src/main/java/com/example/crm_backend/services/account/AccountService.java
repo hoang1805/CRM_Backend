@@ -1,10 +1,9 @@
-package com.example.crm_backend.services;
+package com.example.crm_backend.services.account;
 
-import com.example.crm_backend.dtos.AccountDTO;
+import com.example.crm_backend.dtos.account.AccountDTO;
 import com.example.crm_backend.entities.account.Account;
 import com.example.crm_backend.entities.account.AccountValidator;
 import com.example.crm_backend.entities.user.User;
-import com.example.crm_backend.entities.user.UserValidator;
 import com.example.crm_backend.repositories.AccountRepository;
 import com.example.crm_backend.repositories.UserRepository;
 import com.example.crm_backend.utils.ObjectMapper;
@@ -14,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

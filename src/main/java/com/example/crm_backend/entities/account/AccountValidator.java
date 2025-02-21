@@ -1,6 +1,6 @@
 package com.example.crm_backend.entities.account;
 
-import com.example.crm_backend.services.AccountService;
+import com.example.crm_backend.services.account.AccountService;
 import com.example.crm_backend.utils.Timer;
 import com.example.crm_backend.utils.Validator;
 

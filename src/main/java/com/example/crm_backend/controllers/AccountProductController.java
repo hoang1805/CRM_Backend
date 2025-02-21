@@ -1,9 +1,9 @@
 package com.example.crm_backend.controllers;
 
-import com.example.crm_backend.dtos.AccountProductDTO;
+import com.example.crm_backend.dtos.account.AccountProductDTO;
 import com.example.crm_backend.entities.account.product.AccountProduct;
 import com.example.crm_backend.entities.user.User;
-import com.example.crm_backend.services.AccountProductService;
+import com.example.crm_backend.services.account.AccountProductService;
 import com.example.crm_backend.services.UserService;
 import com.example.crm_backend.utils.SessionHelper;
 import jakarta.servlet.http.HttpServletRequest;

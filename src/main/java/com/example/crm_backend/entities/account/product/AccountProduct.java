@@ -1,6 +1,6 @@
 package com.example.crm_backend.entities.account.product;
 
-import com.example.crm_backend.dtos.AccountProductDTO;
+import com.example.crm_backend.dtos.account.AccountProductDTO;
 import com.example.crm_backend.entities.Releasable;
 import com.example.crm_backend.entities.user.User;
 import jakarta.persistence.*;

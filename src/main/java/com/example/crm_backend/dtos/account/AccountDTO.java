@@ -1,5 +1,6 @@
-package com.example.crm_backend.dtos;
+package com.example.crm_backend.dtos.account;
 
+import com.example.crm_backend.dtos.UserDTO;
 import com.example.crm_backend.enums.Gender;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
