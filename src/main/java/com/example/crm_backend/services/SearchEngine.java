@@ -70,11 +70,11 @@ public class SearchEngine {
             }
         }
 
-        for (Account account : accounts) {
-            if (equalsIgnoreCase(account.getName(), query)) {
-                return account;
-            }
-        }
+//        for (Account account : accounts) {
+//            if (equalsIgnoreCase(account.getName(), query)) {
+//                return account;
+//            }
+//        }
 
         return null;
     }
@@ -100,9 +100,9 @@ public class SearchEngine {
         }
 
         for (User user : users) {
-            if (user.getName().equals(query)) {
-                return user;
-            }
+//            if (user.getName().equals(query)) {
+//                return user;
+//            }
 
             if (equalsIgnoreCase(user.getName(), query)) {
                 return user;
@@ -124,16 +124,31 @@ public class SearchEngine {
             }
         }
 
+//        for (Source source : sources) {
+//            if (equalsIgnoreCase(source.getCode(), query)) {
+//                return source;
+//            }
+//
+//            if (source.getName().equals(query)) {
+//                return source;
+//            }
+//
+//            if (equalsIgnoreCase(source.getName(), query)) {
+//                return source;
+//            }
+//        }
+
+        return null;
+    }
+
+    public Source searchSourceById(String query) {
+        if (!isExist("sources")) {
+            addData("sources", source_repository.findAll());
+        }
+
+        List<Source> sources = (List<Source>) getData("sources");
         for (Source source : sources) {
-            if (equalsIgnoreCase(source.getCode(), query)) {
-                return source;
-            }
-
-            if (source.getName().equals(query)) {
-                return source;
-            }
-
-            if (equalsIgnoreCase(source.getName(), query)) {
+            if (source.getId().equals(Long.parseLong(query))) {
                 return source;
             }
         }
@@ -155,6 +170,21 @@ public class SearchEngine {
 
         for (Relationship relationship : relationships) {
             if (equalsIgnoreCase(relationship.getName(), query)) {
+                return relationship;
+            }
+        }
+
+        return null;
+    }
+
+    public Relationship searchRelationshipById(String query) {
+        if (!isExist("relationships")) {
+            addData("relationships", relationship_repository.findAll());
+        }
+
+        List<Relationship> relationships = (List<Relationship>) getData("relationships");
+        for (Relationship relationship : relationships) {
+            if (relationship.getId().equals(Long.parseLong(query))) {
                 return relationship;
             }
         }

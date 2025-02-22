@@ -5,6 +5,7 @@ import com.example.crm_backend.dtos.UserDTO;
 import com.example.crm_backend.entities.account.Account;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.enums.Role;
+import com.example.crm_backend.services.account.AccountExporter;
 import com.example.crm_backend.services.account.AccountImporter;
 import com.example.crm_backend.services.account.AccountService;
 import com.example.crm_backend.services.UserService;
@@ -39,11 +40,14 @@ public class AccountController {
 
     private final AccountImporter account_importer;
 
+    private final AccountExporter account_exporter;
+
     @Autowired
-    public AccountController(AccountService account_service, UserService user_service, AccountImporter accountImporter) {
+    public AccountController(AccountService account_service, UserService user_service, AccountImporter accountImporter, AccountExporter accountExporter) {
         this.account_service = account_service;
         this.user_service = user_service;
         account_importer = accountImporter;
+        account_exporter = accountExporter;
     }
 
     @GetMapping("/{id}")
@@ -290,19 +294,32 @@ public class AccountController {
             return ResponseEntity.badRequest().body(Map.of("message", "Invalid accounts format"));
         }
 
-        // Xử lý dữ liệu...
-        for (AccountDTO account : accounts) {
-//            try {
-//                account_service.createAccount(account, current_user);
-//            }
+        try {
+            int success = account_service.importAccounts(accounts, current_user, refined_options.get("ignore_error"), refined_options.get("allow_override"));
+            return ResponseEntity.ok(Map.of("success", success));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
-
+    @PostMapping("/export")
+    public ResponseEntity<Resource> exportAccounts(@RequestBody List<Long> account_ids, HttpServletRequest request) {
+        User current_user = SessionHelper.getSessionUser(request, user_service);
+        if (current_user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body((Resource) Map.of("message", "Invalid user"));
         }
 
+        try {
+            ByteArrayResource resource = account_exporter.exportAccounts(account_ids);
 
-        return ResponseEntity.ok(Map.of(
-                "message", "Received " + accounts.size() + " accounts",
-                "options", options
-        ));
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=template.xlsx")
+                    .contentLength(resource.contentLength())
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(resource);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
