@@ -62,14 +62,16 @@ public class FeedbackController {
         }
 
         String email = account.getEmail();
-
-        try {
-            AccessToken token = access_token_service.create(account, Timer.ONE_DAY, "feedback");
+        AccessToken token = access_token_service.create(account, Timer.ONE_DAY, "feedback");
+        try{
             email_service.sendEmail(email, "Đánh giá trải nghiệm", feedback_service.getFeedbackContent(token.getToken()));
             return ResponseEntity.ok("Request feedback successful");
         } catch (EntityExistsException existsException) {
+            access_token_service.deleteById(token.getId());
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(Map.of("message", "You have already requested feedback"));
         } catch (Exception e) {
+            access_token_service.deleteById(token.getId());
+//            throw new IllegalStateException(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", e.getMessage()));
         }
     }

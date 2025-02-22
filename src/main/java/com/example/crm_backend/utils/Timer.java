@@ -2,6 +2,7 @@ package com.example.crm_backend.utils;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 
 public class Timer {
@@ -9,11 +10,16 @@ public class Timer {
         return System.currentTimeMillis();
     }
 
-    public static Long endOfDay(Long time){
+    public static Long endOfDay(Long time) {
         Instant instant = Instant.ofEpochMilli(time);
-        ZonedDateTime zoned_date_time = instant.atZone(ZoneId.systemDefault());
-        ZonedDateTime day = zoned_date_time.with(LocalDateTime.MAX);
-        return day.toInstant().toEpochMilli();
+        ZonedDateTime zonedDateTime = instant.atZone(ZoneId.systemDefault());
+
+        // Lấy cuối ngày (23:59:59.999)
+        ZonedDateTime endOfDay = zonedDateTime.toLocalDate()
+                .atTime(23, 59, 59, 999_999_999)
+                .atZone(ZoneId.systemDefault());
+
+        return endOfDay.toInstant().toEpochMilli();
     }
 
     public static Long endOfMonth(Long time){
@@ -46,6 +52,13 @@ public class Timer {
         } else {
             return "Evening";
         }
+
+
+    }
+
+    public static Long addDuration(Long time, long dis, ChronoUnit unit) {
+        Instant instant = Instant.ofEpochMilli(time).plus(dis, unit);
+        return instant.toEpochMilli();
     }
 
 }

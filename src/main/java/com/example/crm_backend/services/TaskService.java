@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -212,5 +214,21 @@ public class TaskService {
     public Page<Task> getTaskList(int ipp, int page, String query, Long manager_id, Long participant_id, Long status) {
         Pageable request = PageRequest.of(page, ipp, Sort.by(Sort.Direction.DESC, "id"));
         return task_repository.searchTasks(query, manager_id, participant_id, status, request);
+    }
+
+    public Long getCompletedTask(User user) {
+        return task_repository.countTasksByUserAndStatus(user.getId(), (long) Task.COMPLETED);
+    }
+
+    public Long getProgressTask(User currentUser) {
+        return task_repository.countTasksByUserAndStatus(currentUser.getId(), (long) Task.IN_PROGRESS);
+    }
+
+    public Long getExpiredTask(User user) {
+        return task_repository.countExpiredTasks(user.getId(), Timer.now());
+    }
+
+    public List<Task> getUpcomingTasks(User user) {
+        return task_repository.findUpcomingTasks(user.getId(), Timer.now(), Timer.  endOfDay(Timer.addDuration(Timer.now(), 1, ChronoUnit.DAYS)));
     }
 }

@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface
 TaskRepository extends JpaRepository<Task, Long> {
@@ -51,4 +53,19 @@ TaskRepository extends JpaRepository<Task, Long> {
             @Param("participant_id") Long participantId,
             @Param("status") Long status,
             Pageable pageable);
+
+    @Query("SELECT COUNT(t) FROM Task t WHERE (t.participantId = :user OR t.managerId = :user) AND t.status = :status")
+    Long countTasksByUserAndStatus(@Param("user") Long userId, @Param("status") Long status);
+
+    @Query("SELECT COUNT(t) FROM Task t WHERE (t.participantId = :user OR t.managerId = :user) AND t.endDate < :expire AND t.status != 33 AND t.status < 40")
+    Long countExpiredTasks(@Param("user") Long userId, @Param("expire") Long expire);
+
+    @Query("SELECT t FROM Task t " +
+            "WHERE (t.participantId = :user OR t.managerId = :user) " +
+            "AND t.endDate BETWEEN :now AND :deadline " +
+            "AND t.status != 33 AND t.status < 40 " +
+            "ORDER BY t.endDate ASC")
+    List<Task> findUpcomingTasks(@Param("user") Long userId,
+                                 @Param("now") Long now,
+                                 @Param("deadline") Long deadline);
 }
