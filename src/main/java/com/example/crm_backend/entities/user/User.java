@@ -200,7 +200,7 @@ public class User implements Releasable<UserDTO> {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
-    public UserACL acl(){
+    public UserACL acl() {
         if (this.acl == null) {
             this.acl = new UserACL(this);
         }
@@ -209,7 +209,7 @@ public class User implements Releasable<UserDTO> {
     }
 
     @Override
-    public UserDTO release(){
+    public UserDTO release() {
         return release(null);
     }
 
@@ -236,19 +236,19 @@ public class User implements Releasable<UserDTO> {
         UserDTO user_DTO = new UserDTO();
         user_DTO.setId(id).setName(name).setUsername(username).setEmail(email).setPhone(phone)
                 .setRole(role).setTitle(title);
-//        if (session_user != null) {
-//            user_DTO.setACL(Map.of(
-//                    "view", this.acl().canView(session_user),
-//                    "edit", this.acl().canEdit(session_user),
-//                    "delete", this.acl().canDelete(session_user)
-//            ));
-//        }
+        if (session_user != null) {
+            user_DTO.setACL(Map.of(
+                    "view", this.acl().canView(session_user),
+                    "edit", this.acl().canEdit(session_user),
+                    "delete", this.acl().canDelete(session_user)
+            ));
+        }
 
         return user_DTO;
     }
 
     @Override
-    public UserDTO releaseCompact(){
+    public UserDTO releaseCompact() {
         return releaseCompact(null);
     }
 }

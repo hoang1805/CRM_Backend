@@ -1,5 +1,7 @@
 package com.example.crm_backend.controllers;
 
+import com.example.crm_backend.dtos.account.AccountDTO;
+import com.example.crm_backend.entities.account.Account;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.dtos.UserDTO;
 import com.example.crm_backend.entities.user.UserValidator;
@@ -119,5 +121,29 @@ public class UserController {
 
         return ResponseEntity.ok(user_service.searchUsers((query))
                 .stream().map(User::releaseCompact).collect(Collectors.toList()));
+    }
+
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<Object> editUser(@RequestBody UserDTO user_DTO, @PathVariable Long id, HttpServletRequest request) {
+        User current_user = SessionHelper.getSessionUser(request, user_service);
+        if (current_user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
+        }
+
+        User user = user_service.getUser(id);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found"));
+        }
+
+        if(!user.acl().canEdit(current_user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+        }
+
+        try {
+            User edited = user_service.updateUser(id, user_DTO);
+            return ResponseEntity.ok(Map.of("user", edited.release(current_user)));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        }
     }
 }
