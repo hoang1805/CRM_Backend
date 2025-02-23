@@ -1,6 +1,7 @@
 package com.example.crm_backend.services;
 
 import com.example.crm_backend.dtos.UserDTO;
+import com.example.crm_backend.dtos.UserPasswordDTO;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.entities.user.UserValidator;
 import com.example.crm_backend.repositories.UserRepository;
@@ -84,7 +85,6 @@ public class UserService {
         User newUser = new User();
         ObjectMapper.mapAll(userDTO, newUser);
 
-        user.setUsername(newUser.getUsername());
         user.setName(newUser.getName());
         user.setPhone(newUser.getPhone());
         user.setEmail(newUser.getEmail());
@@ -94,6 +94,27 @@ public class UserService {
         user.setSign(newUser.getSign());
 
         try {
+            UserValidator validator = new UserValidator(user, this);
+            validator.validate();
+            user.setLastUpdate(Timer.now());
+        } catch (Exception ex) {
+            throw new IllegalStateException(ex.getMessage());
+        }
+        return user_repository.save(user);
+    }
+
+    public User updateUserPassword(Long user_id, UserPasswordDTO userDTO) {
+        User user = getUser(user_id);
+        if (user == null) {
+            throw new IllegalStateException("User does not exist");
+        }
+
+        if (!user.getPassword().equals(userDTO.getOldPassword())) {
+            throw new IllegalStateException("Passwords do not match");
+        }
+
+        try {
+            user.setPassword(Encoder.hashPassword(userDTO.getNewPassword()));
             UserValidator validator = new UserValidator(user, this);
             validator.validate();
             user.setLastUpdate(Timer.now());
