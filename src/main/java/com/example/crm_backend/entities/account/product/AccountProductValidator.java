@@ -66,7 +66,7 @@ public class AccountProductValidator extends Validator {
     }
 
     public AccountProductValidator validQuantity() {
-        if (account_product.getQuantity() == null || account_product.getQuantity() < 0) {
+        if (account_product.getQuantity() == null || account_product.getQuantity() <= 0) {
             throw new IllegalStateException("Invalid quantity. Please try again");
         }
 
