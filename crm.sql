@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 20, 2025 at 07:31 PM
+-- Generation Time: Feb 24, 2025 at 09:08 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
     `attachment` varchar(255) DEFAULT NULL,
     `created_at` bigint(20) DEFAULT NULL,
     `creator_id` bigint(20) DEFAULT NULL,
-    `description` varchar(255) DEFAULT NULL,
+    `description` text DEFAULT NULL,
     `end_date` bigint(20) DEFAULT NULL,
     `last_update` bigint(20) DEFAULT NULL,
     `manager_id` bigint(20) DEFAULT NULL,
