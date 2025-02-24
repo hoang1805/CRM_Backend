@@ -140,7 +140,11 @@ public class AccountProductService {
 
     public Page<AccountProduct> paginate(int ipp, int page, String account_id, String query, Long start, Long end) {
         Pageable request = PageRequest.of(page, ipp, Sort.by(DESC, "id"));
+        if (end != null && end != 0) {
+            end = Timer.endOfDay(end);
+        }
 
+//        System.out.println(String.format("ipp: %d, page: %d, account_id: %s, query: %s, start: %d, end: %d", ipp, page, account_id, query, start, end));
         return account_product_repository.searchProducts(account_id, query, start, end, request);
     }
 }

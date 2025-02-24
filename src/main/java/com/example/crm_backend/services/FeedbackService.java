@@ -65,6 +65,9 @@ public class FeedbackService {
 
     public Page<Feedback> paginateByAccount(int ipp, int page, String accountId, String query, Long start, Long end) {
         Pageable request = PageRequest.of(page, ipp, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "id"));
+        if (end != null && end != 0) {
+            end = Timer.endOfDay(end);
+        }
 
         return feedback_repository.searchFeedbackByAccount(accountId, query, start, end, request);
     }
