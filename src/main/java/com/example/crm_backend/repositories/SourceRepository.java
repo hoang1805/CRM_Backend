@@ -12,7 +12,7 @@ public interface SourceRepository extends JpaRepository<Source, Long> {
     boolean existsByCode(String code);
 
     @Query(value = "SELECT * FROM sources \n" +
-            "               WHERE MATCH(name, code) AGAINST(CONCAT(:query, '*') IN BOOLEAN MODE) \n" +
+            "               WHERE (:query IS NULL OR :query = '' OR MATCH(name, code) AGAINST (:query IN NATURAL LANGUAGE MODE)) \n" +
             "               ORDER BY id",
             nativeQuery = true)
     List<Source> searchSources(@Param("query") String query);
