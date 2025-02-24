@@ -67,8 +67,12 @@ public class ExcelImporter {
             Cell cell = row.getCell(i);
             String value = getCellValue(cell);
 
-            if (value == null && !ignoreError) {
-                throw new RuntimeException("Thiếu dữ liệu tại cột: " + column + " (Hàng: " + row.getRowNum() + ")");
+//            if (value == null && !ignoreError) {
+//                throw new RuntimeException("Thiếu dữ liệu tại cột: " + column + " (Hàng: " + row.getRowNum() + ")");
+//            }
+
+            if (value == null || value.isEmpty()) {
+                value = "";
             }
 
             rowData.put(column, value);
@@ -79,17 +83,20 @@ public class ExcelImporter {
     private static String getCellValue(Cell cell) {
         if (cell == null) return null;
 
-        return switch (cell.getCellType()) {
-            case STRING -> cell.getStringCellValue().trim();
-            case NUMERIC -> {
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    yield new SimpleDateFormat("yyyy-MM-dd").format(cell.getDateCellValue());
-                }
-                yield String.valueOf(cell.getNumericCellValue());
-            }
-            case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
-            default -> null;
-        };
+        DataFormatter formatter = new DataFormatter();
+        return formatter.formatCellValue(cell);
+
+//        return switch (cell.getCellType()) {
+//            case STRING -> cell.getStringCellValue().trim();
+//            case NUMERIC -> {
+//                if (DateUtil.isCellDateFormatted(cell)) {
+//                    yield new SimpleDateFormat("yyyy-MM-dd").format(cell.getDateCellValue());
+//                }
+//                yield String.valueOf(cell.getNumericCellValue());
+//            }
+//            case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
+//            default -> null;
+//        };
     }
 
     public static ByteArrayResource generateTemplate(List<String> columns) {
