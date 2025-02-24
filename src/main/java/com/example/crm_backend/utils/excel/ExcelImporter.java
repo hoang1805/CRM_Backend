@@ -84,19 +84,12 @@ public class ExcelImporter {
         if (cell == null) return null;
 
         DataFormatter formatter = new DataFormatter();
-        return formatter.formatCellValue(cell);
+//        return formatter.formatCellValue(cell);
+        if (Objects.equals(cell.getCellType(), CellType.NUMERIC) && DateUtil.isCellDateFormatted(cell)) {
+            return new SimpleDateFormat("dd-MM-yyyy").format(cell.getDateCellValue());
+        }
 
-//        return switch (cell.getCellType()) {
-//            case STRING -> cell.getStringCellValue().trim();
-//            case NUMERIC -> {
-//                if (DateUtil.isCellDateFormatted(cell)) {
-//                    yield new SimpleDateFormat("yyyy-MM-dd").format(cell.getDateCellValue());
-//                }
-//                yield String.valueOf(cell.getNumericCellValue());
-//            }
-//            case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
-//            default -> null;
-//        };
+        return formatter.formatCellValue(cell).trim();
     }
 
     public static ByteArrayResource generateTemplate(List<String> columns) {

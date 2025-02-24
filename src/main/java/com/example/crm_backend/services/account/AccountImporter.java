@@ -1,6 +1,7 @@
 package com.example.crm_backend.services.account;
 
 import com.example.crm_backend.dtos.account.AccountDTO;
+import com.example.crm_backend.entities.relationship.Relationship;
 import com.example.crm_backend.entities.source.Source;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.enums.Gender;
@@ -198,7 +199,12 @@ public class AccountImporter {
             return ;
         }
 
-        dto.setRelationshipId(search_engine.searchRelationship(relationship).getId());
+        Relationship res = search_engine.searchRelationship(relationship);
+        if(res == null) {
+            return ;
+        }
+
+        dto.setRelationshipId(res.getId());
     }
 
     private void readReferrer(AccountDTO dto, String referrer) {

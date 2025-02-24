@@ -119,6 +119,8 @@ public class SearchEngine {
 
         List<Source> sources = (List<Source>) getData("sources");
         for (Source source : sources) {
+//            System.out.println(source.getCode());
+//            System.out.println(query);
             if (source.getCode().equals(query)) {
                 return source;
             }
