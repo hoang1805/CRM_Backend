@@ -154,6 +154,7 @@ public class AccountService {
 
     @Transactional
     public int importAccounts(List<AccountDTO> dtos, User user, boolean ignore_error, boolean override) {
+//        System.out.println(override + " and " + ignore_error);
         List<Account> accounts = new ArrayList<>();
         for (AccountDTO dto : dtos) {
             Account account = search_engine.searchAccount(dto.getCode());
