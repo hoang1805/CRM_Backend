@@ -52,7 +52,7 @@ public class TaskController {
         }
 
         if (!task.acl().canView(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         return ResponseEntity.ok(task.release(current_user));
@@ -109,7 +109,7 @@ public class TaskController {
         }
 
         if (current_user.getRole() != Role.ADMIN && current_user.getRole() != Role.MANAGER) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
@@ -133,7 +133,7 @@ public class TaskController {
         }
 
         if (!task.acl().canEdit(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
@@ -157,7 +157,7 @@ public class TaskController {
         }
 
         if (!task.acl().canDelete(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
@@ -181,7 +181,7 @@ public class TaskController {
         }
 
         if (!task.acl().canEdit(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
@@ -205,7 +205,7 @@ public class TaskController {
         }
 
         if (!task.acl().canEdit(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
@@ -229,7 +229,7 @@ public class TaskController {
         }
 
         if (!task.acl().canEdit(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
@@ -253,7 +253,7 @@ public class TaskController {
         }
 
         if (!Objects.equals(current_user.getId(), task.getManagerId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
@@ -277,7 +277,7 @@ public class TaskController {
         }
 
         if (!Objects.equals(current_user.getId(), task.getManagerId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
@@ -301,7 +301,7 @@ public class TaskController {
         }
 
         if (!Objects.equals(current_user.getId(), task.getManagerId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
@@ -325,7 +325,7 @@ public class TaskController {
         }
 
         if (!Objects.equals(current_user.getId(), task.getManagerId()) && !Objects.equals(current_user.getId(), task.getCreatorId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {

@@ -41,7 +41,7 @@ public class AccountProductController {
         }
 
         if (!ap.acl().canView(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have access"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         return ResponseEntity.ok(Map.of("account_product", ap.release(current_user)));
@@ -75,7 +75,7 @@ public class AccountProductController {
         }
 
         if (!ap.acl().canEdit(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have access"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
@@ -99,7 +99,7 @@ public class AccountProductController {
         }
 
         if (!ap.acl().canDelete(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have access"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {

@@ -1,55 +1,29 @@
 package com.example.crm_backend.dtos;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.HashMap;
 import java.util.Map;
 
-
+@Getter
+@Setter
 public class UserPasswordDTO {
-    private Long id;
 
+    @JsonProperty("old_password")
     private String oldPassword;
 
+    @JsonProperty("new_password")
     private String newPassword;
 
-    private Map<String, Boolean> acl = new HashMap<>();
+    @JsonProperty("confirm_password")
+    private String confirmPassword;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getOldPassword() {
-        return oldPassword;
-    }
-
-    public void setOldPassword(String oldPassword) {
-        this.oldPassword = oldPassword;
-    }
-
-    public String getNewPassword() {
-        return newPassword;
-    }
-
-    public void setNewPassword(String newPassword) {
-        this.newPassword = newPassword;
-    }
-
-    public Map<String, Boolean> getAcl() {
-        return acl;
-    }
-
-    public void setAcl(Map<String, Boolean> acl) {
-        this.acl = acl;
-    }
-
-    public UserPasswordDTO(Long id, String oldPassword, String newPassword, Map<String, Boolean> acl) {
-        this.id = id;
+    public UserPasswordDTO(String oldPassword, String newPassword, String confirmPassword) {
         this.oldPassword = oldPassword;
         this.newPassword = newPassword;
-        this.acl = acl;
+        this.confirmPassword = confirmPassword;
     }
 }

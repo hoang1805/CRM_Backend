@@ -5,7 +5,7 @@ import com.example.crm_backend.enums.Role;
 import java.util.Objects;
 
 public class UserACL {
-    private User user;
+    private final User user;
 
     public UserACL(User user){
         this.user = user;

@@ -48,7 +48,7 @@ public class RelationshipController {
         }
 
         if (!Objects.equals(current_user.getRole(), Role.ADMIN) && !Objects.equals(current_user.getRole(), Role.MANAGER)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         Relationship relationship = relationship_service.create(relationship_DTO, current_user);
@@ -69,7 +69,7 @@ public class RelationshipController {
 
         Relationship current_relationship = relationship_service.getRelationship(id);
         if (!current_relationship.acl().canEdit(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
@@ -93,7 +93,7 @@ public class RelationshipController {
 
         Relationship current_relationship = relationship_service.getRelationship(id);
         if (!current_relationship.acl().canEdit(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
@@ -117,7 +117,7 @@ public class RelationshipController {
 
         Relationship current_relationship = relationship_service.getRelationship(id);
         if (!current_relationship.acl().canDelete(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {

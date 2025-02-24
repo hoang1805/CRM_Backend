@@ -4,6 +4,7 @@ import com.example.crm_backend.dtos.UserDTO;
 import com.example.crm_backend.dtos.UserPasswordDTO;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.entities.user.UserValidator;
+import com.example.crm_backend.enums.Role;
 import com.example.crm_backend.repositories.UserRepository;
 import com.example.crm_backend.utils.Encoder;
 import com.example.crm_backend.utils.ObjectMapper;
@@ -52,17 +53,16 @@ public class UserService {
         return user.orElse(null);
     }
 
-    public User createUser(User user) {
-        try {
-            UserValidator validator = new UserValidator(user, this);
-            validator.validate();
-        } catch (Exception e) {
-            throw e;
-        }
+    public User createUser(User user, User creator) {
+        user.setPassword("123456");
+        user.setRole(Role.STAFF);
+        UserValidator validator = new UserValidator(user, this);
+        validator.validate();
 
         user.setPassword(Encoder.hashPassword(user.getPassword()));
         user.setLastUpdate(Timer.now());
         user.setCreatedAt(Timer.now());
+        user.setCreatorId(creator.getId());
         return user_repository.save(user);
     }
 
@@ -104,19 +104,29 @@ public class UserService {
     }
 
     public User updateUserPassword(Long user_id, UserPasswordDTO userDTO) {
+        if (userDTO.getOldPassword() == null || userDTO.getNewPassword() == null || userDTO.getConfirmPassword() == null) {
+            throw new IllegalStateException("Some password fields are empty");
+        }
+
         User user = getUser(user_id);
         if (user == null) {
             throw new IllegalStateException("User does not exist");
         }
 
-        if (!user.getPassword().equals(userDTO.getOldPassword())) {
-            throw new IllegalStateException("Passwords do not match");
+        if (!Encoder.verifyPassword(userDTO.getOldPassword(), user.getPassword())) {
+            throw new IllegalStateException("Password does not match");
         }
 
         try {
-            user.setPassword(Encoder.hashPassword(userDTO.getNewPassword()));
+            user.setPassword(userDTO.getNewPassword());
             UserValidator validator = new UserValidator(user, this);
-            validator.validate();
+            validator.validPassword();
+
+            if (!Objects.equals(userDTO.getNewPassword(), userDTO.getConfirmPassword())) {
+                throw new IllegalStateException("Password confirm does not match");
+            }
+
+            user.setPassword(Encoder.hashPassword(user.getPassword()));
             user.setLastUpdate(Timer.now());
         } catch (Exception ex) {
             throw new IllegalStateException(ex.getMessage());
@@ -136,5 +146,38 @@ public class UserService {
 
     public List<User> searchUsers(String query) {
         return user_repository.searchUsers(query);
+    }
+
+    public User grantManager(Long id) {
+        User user = getUser(id);
+        if (user == null) {
+            throw new IllegalStateException("User does not exist");
+        }
+
+        user.setRole(Role.MANAGER);
+        user.setLastUpdate(Timer.now());
+        return user_repository.save(user);
+    }
+
+    public User grantStaff(Long id) {
+        User user = getUser(id);
+        if (user == null) {
+            throw new IllegalStateException("User does not exist");
+        }
+
+        user.setRole(Role.STAFF);
+        user.setLastUpdate(Timer.now());
+        return user_repository.save(user);
+    }
+
+    public User resetPassword(Long id) {
+        User user = getUser(id);
+        if (user == null) {
+            throw new IllegalStateException("User does not exist");
+        }
+
+        user.setPassword(Encoder.hashPassword("123456"));
+        user.setLastUpdate(Timer.now());
+        return user_repository.save(user);
     }
 }

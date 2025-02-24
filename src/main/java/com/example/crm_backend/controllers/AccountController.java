@@ -116,7 +116,7 @@ public class AccountController {
         }
 
         if(!account.acl().canEdit(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
@@ -140,7 +140,7 @@ public class AccountController {
         }
 
         if (!account.acl().canDelete(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
@@ -162,7 +162,7 @@ public class AccountController {
         List<Account> accounts = account_service.getByIds(ids);
         for (Account account: accounts) {
             if (!account.acl().canDelete(current_user)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
             }
         }
 
@@ -212,7 +212,7 @@ public class AccountController {
         }
 
         if (current_user.getRole() != Role.ADMIN) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         if (!ExcelImporter.isExcelFile(file)) {
