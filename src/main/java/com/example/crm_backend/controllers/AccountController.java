@@ -99,7 +99,7 @@ public class AccountController {
             Account account = account_service.createAccount(accountDTO, current_user);
             return ResponseEntity.ok(Map.of("account", account.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -123,7 +123,7 @@ public class AccountController {
             Account edited = account_service.edit(id, account_DTO);
             return ResponseEntity.ok(Map.of("account", edited.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -236,7 +236,7 @@ public class AccountController {
             List<AccountDTO> data = account_importer.readFile(file, refined_options);
             return ResponseEntity.ok(data);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -318,8 +318,8 @@ public class AccountController {
                     .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                     .body(resource);
         } catch (Exception e) {
-            throw new RuntimeException(e);
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//            throw new RuntimeException(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

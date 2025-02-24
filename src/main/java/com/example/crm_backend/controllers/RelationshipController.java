@@ -76,7 +76,7 @@ public class RelationshipController {
             Relationship relationship = relationship_service.edit(id, relationship_DTO);
             return ResponseEntity.ok(Map.of("relationship", relationship.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -100,7 +100,7 @@ public class RelationshipController {
             Relationship relationship = relationship_service.editColor(id, relationship_DTO);
             return ResponseEntity.ok(Map.of("relationship", relationship.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -124,7 +124,7 @@ public class RelationshipController {
             relationship_service.delete(id);
             return ResponseEntity.ok(Map.of("message", "Delete successfully"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 }

@@ -89,7 +89,7 @@ public class UserController {
             User new_user = user_service.createUser(user);
             return ResponseEntity.ok(Map.of("user", new_user.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -109,7 +109,7 @@ public class UserController {
             user_service.deleteUser(id);
             return ResponseEntity.ok(null);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -144,7 +144,7 @@ public class UserController {
             User edited = user_service.updateUser(id, user_DTO);
             return ResponseEntity.ok(Map.of("user", edited.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -168,7 +168,7 @@ public class UserController {
             User edited = user_service.updateUserPassword(id, userPassword_DTO);
             return ResponseEntity.ok(Map.of("user", edited.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 }

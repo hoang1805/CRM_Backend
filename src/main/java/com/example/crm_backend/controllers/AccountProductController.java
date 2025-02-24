@@ -58,7 +58,7 @@ public class AccountProductController {
             AccountProduct ap = account_product_service.create(dto, current_user);
             return ResponseEntity.ok(Map.of("account_product", ap.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -82,7 +82,7 @@ public class AccountProductController {
             AccountProduct edited_ap = account_product_service.edit(id, dto);
             return ResponseEntity.ok(Map.of("account_product", edited_ap.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -106,7 +106,7 @@ public class AccountProductController {
             account_product_service.delete(id);
             return ResponseEntity.ok(Map.of("message", "Delete successfully"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -121,7 +121,7 @@ public class AccountProductController {
             AccountProduct ap = account_product_service.duplicate(id, current_user);
             return ResponseEntity.ok(Map.of("account_product", ap.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 

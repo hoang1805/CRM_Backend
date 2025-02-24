@@ -116,7 +116,7 @@ public class TaskController {
             Task task = task_service.createTask(task_DTO, current_user);
             return ResponseEntity.ok(Map.of("task", task.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -140,7 +140,7 @@ public class TaskController {
             Task new_task = task_service.editTask(id, task_DTO, current_user);
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -164,7 +164,7 @@ public class TaskController {
             task_service.deleteTask(id);
             return ResponseEntity.ok(Map.of("message", "Delete successfully"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -188,7 +188,7 @@ public class TaskController {
             Task new_task = task_service.duplicate(id, current_user);
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -212,7 +212,7 @@ public class TaskController {
             Task new_task = task_service.start(id);
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -236,7 +236,7 @@ public class TaskController {
             Task new_task = task_service.requestApproval(id);
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -260,7 +260,7 @@ public class TaskController {
             Task new_task = task_service.approve(id);
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -284,7 +284,7 @@ public class TaskController {
             Task new_task = task_service.reject(id);
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -308,7 +308,7 @@ public class TaskController {
             Task new_task = task_service.complete(id);
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -332,7 +332,7 @@ public class TaskController {
             Task new_task = task_service.cancel(id);
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 }

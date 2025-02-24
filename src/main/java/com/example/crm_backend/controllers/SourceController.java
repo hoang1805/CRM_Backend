@@ -79,7 +79,7 @@ public class SourceController {
             Source source = source_service.edit(id, source_DTO);
             return ResponseEntity.ok(Map.of("source", source.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -103,7 +103,7 @@ public class SourceController {
             source_service.delete(id);
             return ResponseEntity.ok(Map.of("message", "Delete successfully"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 

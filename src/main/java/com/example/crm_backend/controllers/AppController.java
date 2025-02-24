@@ -93,8 +93,8 @@ public class AppController {
                     "upcoming", task_service.getUpcomingTasks(current_user).stream().map(task -> task.release(current_user)).collect(Collectors.toList())
             ));
         } catch (Exception e) {
-            throw new IllegalStateException(e);
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+//            throw new IllegalStateException(e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 }

@@ -58,7 +58,7 @@ public class FeedbackController {
         }
 
         if (account.getEmail() == null || account.getEmail().isBlank()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Can not find account email"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", "Can not find account email"));
         }
 
         String email = account.getEmail();
