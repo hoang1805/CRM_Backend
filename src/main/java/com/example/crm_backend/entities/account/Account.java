@@ -1,6 +1,7 @@
 package com.example.crm_backend.entities.account;
 
-import com.example.crm_backend.dtos.AccountDTO;
+import com.example.crm_backend.dtos.account.AccountDTO;
+import com.example.crm_backend.entities.Exportable;
 import com.example.crm_backend.entities.Releasable;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.enums.Gender;
@@ -10,7 +11,7 @@ import java.util.Map;
 
 @Entity
 @Table(name = "accounts")
-public class Account implements Releasable<AccountDTO> {
+public class Account implements Releasable<AccountDTO>, Exportable {
     @Id
     @GeneratedValue(
             strategy = GenerationType.IDENTITY
@@ -226,7 +227,18 @@ public class Account implements Releasable<AccountDTO> {
 
     @Override
     public AccountDTO releaseCompact(User session_user) {
-        return release(session_user);
+        AccountDTO account_DTO = new AccountDTO();
+        account_DTO.setId(id).setName(name).setGender(gender != null ? gender : Gender.OTHER).setBirthday(birthday)
+                .setPhone(phone).setEmail(email).setCode(code).setAssignedUserId(assigned_user_id).setJob(job);
+        if (session_user != null) {
+            account_DTO.setACL(Map.of(
+                    "view", this.acl().canView(session_user),
+                    "edit", this.acl().canEdit(session_user),
+                    "delete", this.acl().canDelete(session_user)
+            ));
+        }
+
+        return account_DTO;
     }
 
     @Override
@@ -250,5 +262,13 @@ public class Account implements Releasable<AccountDTO> {
         }
 
         return account_DTO;
+    }
+
+    @Override
+    public Map<String, Object> export() {
+        return Map.of(
+                "id", getId(),
+                "name", "account"
+        );
     }
 }

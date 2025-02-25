@@ -1,12 +1,12 @@
-package com.example.crm_backend.services;
+package com.example.crm_backend.services.account;
 
-import com.example.crm_backend.dtos.AccountDTO;
+import com.example.crm_backend.dtos.account.AccountDTO;
 import com.example.crm_backend.entities.account.Account;
 import com.example.crm_backend.entities.account.AccountValidator;
 import com.example.crm_backend.entities.user.User;
-import com.example.crm_backend.entities.user.UserValidator;
 import com.example.crm_backend.repositories.AccountRepository;
 import com.example.crm_backend.repositories.UserRepository;
+import com.example.crm_backend.services.SearchEngine;
 import com.example.crm_backend.utils.ObjectMapper;
 import com.example.crm_backend.utils.Timer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class AccountService {
@@ -27,10 +25,13 @@ public class AccountService {
 
     private final UserRepository user_repository;
 
+    private final SearchEngine search_engine;
+
     @Autowired
-    public AccountService(AccountRepository account_repository, UserRepository user_repository) {
+    public AccountService(AccountRepository account_repository, UserRepository user_repository, SearchEngine searchEngine) {
         this.account_repository = account_repository;
         this.user_repository = user_repository;
+        search_engine = searchEngine;
     }
 
     public List<Account> getAll(){
@@ -53,15 +54,15 @@ public class AccountService {
         return account_repository.searchAccounts(query, (long) relationship_id, request);
     }
 
+    public List<Account> searchAccounts(String query) {
+        return account_repository.searchAccounts(query, 20L);
+    }
+
     public Account createAccount(AccountDTO data, User creator) {
         Account account = new Account();
         ObjectMapper.mapAll(data, account);
-        try {
-            AccountValidator validator = new AccountValidator(account, this);
-            validator.validate();
-        } catch (Exception e) {
-            throw e;
-        }
+        AccountValidator validator = new AccountValidator(account, this);
+        validator.validate();
 
         account.setCreatorId(creator.getId());
         account.setLastUpdate(Timer.now());
@@ -144,5 +145,101 @@ public class AccountService {
 
     public void deleteAccount(Long id) {
         account_repository.deleteById(id);
+    }
+
+    public List<Account> loadAccounts(List<Long> account_ids) {
+        account_ids = account_ids.stream().distinct().collect(java.util.stream.Collectors.toList());
+        return account_repository.findAllById(account_ids);
+    }
+
+    @Transactional
+    public int importAccounts(List<AccountDTO> dtos, User user, boolean ignore_error, boolean override) {
+//        System.out.println(override + " and " + ignore_error);
+        List<Account> accounts = new ArrayList<>();
+        for (AccountDTO dto : dtos) {
+            Account account = search_engine.searchAccount(dto.getCode());
+            if (account == null) {
+                try {
+                    Account new_account = new Account();
+                    ObjectMapper.mapAll(dto, new_account);
+                    AccountValidator validator = new AccountValidator(new_account, this);
+                    validator.validate();
+                    new_account.setLastUpdate(Timer.now());
+                    new_account.setCreatedAt(Timer.now());
+                    new_account.setCreatorId(user.getId());
+
+                    accounts.add(new_account);
+                } catch (Exception e) {
+                    if (!ignore_error) {
+                        throw new IllegalStateException(e.getMessage());
+                    }
+                }
+
+                continue;
+            }
+
+            if (!override && !ignore_error) {
+                throw new IllegalStateException(dto.getCode() + " already exists");
+            }
+
+            if (!override) {
+                continue;
+            }
+
+            Account new_account = new Account();
+            ObjectMapper.mapAll(dto, new_account);
+
+            account.setName(new_account.getName());
+            account.setPhone(new_account.getPhone());
+            account.setCode(new_account.getCode());
+            account.setGender(new_account.getGender());
+            account.setEmail(new_account.getEmail());
+            account.setAssignedUserId(new_account.getAssignedUserId());
+            account.setBirthday(new_account.getBirthday());
+            account.setJob(new_account.getJob());
+            account.setSourceId(new_account.getSourceId());
+            account.setReferrerId(new_account.getReferrerId());
+            account.setRelationshipId(new_account.getRelationshipId());
+
+            try {
+                AccountValidator validator = new AccountValidator(account, this);
+                validator.validate();
+                account.setLastUpdate(Timer.now());
+                accounts.add(account);
+            } catch (Exception e) {
+                if (!ignore_error) {
+                    throw new IllegalStateException(e.getMessage());
+                }
+            }
+        }
+
+
+
+        List<Account> refine_accounts = new ArrayList<>();
+        Map<String, Boolean> mp = new HashMap<>();
+        for (Account account : accounts) {
+            if (account == null) {
+                continue;
+            }
+
+            if (account.getCode() == null) {
+                continue;
+            }
+
+            if (!mp.containsKey(account.getCode())) {
+                mp.put(account.getCode(), true);
+                refine_accounts.add(account);
+            }
+        }
+
+        try {
+            return account_repository.saveAll(refine_accounts).size();
+        } catch (Exception e) {
+            if (!ignore_error) {
+                throw new IllegalStateException(e.getMessage());
+            }
+        }
+
+        return 0;
     }
 }

@@ -21,12 +21,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByUsernameOrEmail(String username, String email);
 
-    Page<User> findAll(Pageable pageable);
-
     List<User> findByIdIn(List<Long> user_ids);
 
     @Query(value = "SELECT * FROM users \n" +
-            "               WHERE MATCH(username, name) AGAINST(CONCAT(:query, '*') IN BOOLEAN MODE) \n" +
+            "               WHERE :query IS NULL OR :query = '' OR MATCH(username, name) AGAINST(:query IN NATURAL LANGUAGE MODE) \n" +
             "               LIMIT 20",
             nativeQuery = true)
     List<User> searchUsers(@Param("query") String query);

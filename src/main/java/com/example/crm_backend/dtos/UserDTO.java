@@ -3,6 +3,7 @@ package com.example.crm_backend.dtos;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.enums.Gender;
 import com.example.crm_backend.enums.Role;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +19,7 @@ public class UserDTO {
 
     private String email;
 
+    @JsonProperty("birthday")
     private Long birthday;
 
     private Gender gender;
@@ -28,12 +30,15 @@ public class UserDTO {
 
     private String sign;
 
+    @JsonProperty("creator_id")
     private Long creator_id;
 
     private String creator_name;
 
+    @JsonProperty("last_update")
     private Long last_update;
 
+    @JsonProperty("created_at")
     private Long created_at;
 
     private Map<String, Boolean> acl = new HashMap<>();

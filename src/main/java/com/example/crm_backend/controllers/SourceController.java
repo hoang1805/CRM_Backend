@@ -51,7 +51,7 @@ public class SourceController {
         }
 
         if (!Objects.equals(current_user.getRole(), Role.ADMIN) && !Objects.equals(current_user.getRole(), Role.MANAGER)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         Source source = source_service.create(source_DTO, current_user);
@@ -72,14 +72,14 @@ public class SourceController {
         }
 
         if (!current_source.acl().canEdit(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
             Source source = source_service.edit(id, source_DTO);
             return ResponseEntity.ok(Map.of("source", source.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -96,14 +96,14 @@ public class SourceController {
         }
 
         if (!current_source.acl().canDelete(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
             source_service.delete(id);
             return ResponseEntity.ok(Map.of("message", "Delete successfully"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 

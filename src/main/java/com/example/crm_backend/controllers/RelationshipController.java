@@ -48,7 +48,7 @@ public class RelationshipController {
         }
 
         if (!Objects.equals(current_user.getRole(), Role.ADMIN) && !Objects.equals(current_user.getRole(), Role.MANAGER)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         Relationship relationship = relationship_service.create(relationship_DTO, current_user);
@@ -69,14 +69,14 @@ public class RelationshipController {
 
         Relationship current_relationship = relationship_service.getRelationship(id);
         if (!current_relationship.acl().canEdit(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
-            Relationship relationship = relationship_service.editColor(id, relationship_DTO);
+            Relationship relationship = relationship_service.edit(id, relationship_DTO);
             return ResponseEntity.ok(Map.of("relationship", relationship.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -93,14 +93,14 @@ public class RelationshipController {
 
         Relationship current_relationship = relationship_service.getRelationship(id);
         if (!current_relationship.acl().canEdit(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
             Relationship relationship = relationship_service.editColor(id, relationship_DTO);
             return ResponseEntity.ok(Map.of("relationship", relationship.release(current_user)));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 
@@ -117,14 +117,14 @@ public class RelationshipController {
 
         Relationship current_relationship = relationship_service.getRelationship(id);
         if (!current_relationship.acl().canDelete(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have permission"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
             relationship_service.delete(id);
             return ResponseEntity.ok(Map.of("message", "Delete successfully"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
 }

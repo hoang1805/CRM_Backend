@@ -1,6 +1,6 @@
 package com.example.crm_backend.entities.account;
 
-import com.example.crm_backend.services.AccountService;
+import com.example.crm_backend.services.account.AccountService;
 import com.example.crm_backend.utils.Timer;
 import com.example.crm_backend.utils.Validator;
 
@@ -8,9 +8,9 @@ public class AccountValidator extends Validator {
     private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
     private static final String PHONE_REGEX = "^(0[3|5|7|8|9])([0-9]{8})$";
 
-    private Account account;
+    private final Account account;
 
-    private AccountService account_service;
+    private final AccountService account_service;
 
     public AccountValidator(Account account, AccountService account_service) {
         this.account = account;
