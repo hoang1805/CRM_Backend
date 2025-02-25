@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 24, 2025 at 09:08 AM
+-- Generation Time: Feb 25, 2025 at 08:29 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `title` varchar(255) DEFAULT NULL,
     `role` varchar(255) NOT NULL,
     `sign` varchar(255) DEFAULT NULL,
-    `password` varchar(255) DEFAULT NULL,
+    `password` text DEFAULT NULL,
     `creator_id` bigint(20) DEFAULT NULL,
     `created_at` bigint(20) DEFAULT NULL,
     `last_update` bigint(20) DEFAULT NULL,
