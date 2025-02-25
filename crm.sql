@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `title` varchar(255) DEFAULT NULL,
     `role` varchar(255) NOT NULL,
     `sign` varchar(255) DEFAULT NULL,
-    `password` varchar(255) DEFAULT NULL,
+    `password` text DEFAULT NULL,
     `creator_id` bigint(20) DEFAULT NULL,
     `created_at` bigint(20) DEFAULT NULL,
     `last_update` bigint(20) DEFAULT NULL,
