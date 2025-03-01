@@ -41,4 +41,5 @@ public interface AccountRepository extends JpaRepository<Account, Long>, JpaSpec
             nativeQuery = true)
     List<Account> searchAccounts(@Param("search") String search, @Param("limit") Long limit);
 
+    void deleteBySystemId(Long system_id);
 }

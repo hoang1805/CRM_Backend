@@ -21,4 +21,6 @@ public interface AccountProductRepository extends JpaRepository<AccountProduct, 
                    "AND (:end = 0 OR last_update <= :end) ",
            nativeQuery = true)
     Page<AccountProduct> searchProducts(@Param("account_id") String account_id, @Param("query") String query, @Param("start") Long start, @Param("end") Long end, Pageable pageable);
+
+    void deleteBySystemId(Long system_id);
 }

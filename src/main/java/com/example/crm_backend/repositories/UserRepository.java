@@ -28,4 +28,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "               LIMIT 20",
             nativeQuery = true)
     List<User> searchUsers(@Param("query") String query);
+
+    void deleteBySystemId(Long system_id);
 }

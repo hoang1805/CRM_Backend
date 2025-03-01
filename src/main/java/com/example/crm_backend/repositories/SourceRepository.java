@@ -16,4 +16,6 @@ public interface SourceRepository extends JpaRepository<Source, Long> {
             "               ORDER BY id",
             nativeQuery = true)
     List<Source> searchSources(@Param("query") String query);
+
+    void deleteBySystemId(Long system_id);
 }

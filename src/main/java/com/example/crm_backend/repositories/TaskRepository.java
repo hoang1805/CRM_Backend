@@ -68,4 +68,6 @@ TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findUpcomingTasks(@Param("user") Long userId,
                                  @Param("now") Long now,
                                  @Param("deadline") Long deadline);
+
+    void deleteBySystemId(Long system_id);
 }
