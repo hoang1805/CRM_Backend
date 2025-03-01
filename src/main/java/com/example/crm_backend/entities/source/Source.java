@@ -23,8 +23,10 @@ public class Source implements Releasable<SourceDTO> {
     private String code;
 
     @Nullable
+    @Column(name = "parent_id")
     private Long parent_id;
 
+    @Column(name = "creator_id")
     private Long creator_id;
 
     private Long created_at;

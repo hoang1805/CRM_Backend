@@ -94,6 +94,7 @@ public class SystemService {
     @Transactional
     public void delete(Long id) {
         system_repository.deleteById(id);
+        onDelete(id);
     }
 
     @Transactional
