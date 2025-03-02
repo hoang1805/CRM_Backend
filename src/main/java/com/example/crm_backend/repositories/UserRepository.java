@@ -23,11 +23,26 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByIdIn(List<Long> user_ids);
 
+    List<User> findByIdInAndSystemId(List<Long> user_ids, Long system_id);
+
     @Query(value = "SELECT * FROM users \n" +
             "               WHERE :query IS NULL OR :query = '' OR MATCH(username, name) AGAINST(:query IN NATURAL LANGUAGE MODE) \n" +
             "               LIMIT 20",
             nativeQuery = true)
     List<User> searchUsers(@Param("query") String query);
 
+    @Query(value = "SELECT * FROM users \n" +
+            "               WHERE (:query IS NULL OR :query = '' OR MATCH(username, name) AGAINST(:query IN NATURAL LANGUAGE MODE)) \n" +
+            "               AND system_id = :system_id \n " +
+            "               LIMIT 20",
+            nativeQuery = true)
+    List<User> searchUsers(@Param("query") String query, @Param("system_id") Long system_id);
+
     void deleteBySystemId(Long system_id);
+
+    long countBySystemId(Long system_id);
+
+    Optional<User> findByIdAndSystemId(Long id, Long systemId);
+
+    Page<User> findBySystemId(Long systemId, Pageable request);
 }

@@ -85,7 +85,7 @@ public class AccountController {
         }
         Page<AccountDTO> data = accounts.map(account -> account.release(current_user));
 
-        return ResponseEntity.ok(facet(data));
+        return ResponseEntity.ok(facet(data, current_user));
     }
 
     @PostMapping("/create")
@@ -187,11 +187,11 @@ public class AccountController {
         return ResponseEntity.ok(accounts.stream().map(Account::releaseCompact).collect(Collectors.toList()));
     }
 
-    private Page<AccountDTO> facet(Page<AccountDTO> data) {
-        List<Long> user_ids = data.stream().flatMap(account -> Stream.of(account.getAssignedUserId(), account.getCreatorId())).filter(Objects::nonNull).toList();
-        List<User> users = user_service.loadUsers(user_ids);
-        Map<Long, UserDTO> map = users.stream()
-                .collect(Collectors.toMap(User::getId, User::releaseCompact));
+    private Page<AccountDTO> facet(Page<AccountDTO> data, User current_user) {
+//        List<Long> user_ids = data.stream().flatMap(account -> Stream.of(account.getAssignedUserId(), account.getCreatorId())).filter(Objects::nonNull).toList();
+//        List<User> users = user_service.loadUsers(user_ids, current_user);
+//        Map<Long, UserDTO> map = users.stream()
+//                .collect(Collectors.toMap(User::getId, User::releaseCompact));
 
         return data.map(account -> {
 //            account.setCreatorExport(map.get(account.getCreatorId()));

@@ -1,25 +1,18 @@
 package com.example.crm_backend.controllers;
 
 import com.example.crm_backend.dtos.UserPasswordDTO;
-import com.example.crm_backend.dtos.account.AccountDTO;
-import com.example.crm_backend.entities.account.Account;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.dtos.UserDTO;
-import com.example.crm_backend.entities.user.UserValidator;
 import com.example.crm_backend.enums.Role;
 import com.example.crm_backend.services.UserService;
 import com.example.crm_backend.utils.SessionHelper;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import jakarta.websocket.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -42,9 +35,10 @@ public class UserController {
         }
 
 //        System.out.println("ipp: " + ipp + ", page: " + page);
-
-        Page<UserDTO> data = user_service.paginate(ipp, page).map(user -> user.release(current_user));
-        return ResponseEntity.ok(data);
+        if (current_user.getRole() == Role.SUPER_ADMIN) {
+            return ResponseEntity.ok(user_service.paginate(ipp, page).map(user -> user.release(current_user)));
+        }
+        return ResponseEntity.ok(user_service.paginateBySystem(ipp, page, current_user.getSystemId()).map(user -> user.release(current_user)));
     }
 
     @GetMapping("")
@@ -64,7 +58,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
-        User user = user_service.getUser(id);
+        User user = user_service.getUserBySystem(id, current_user.getSystemId());
+        if (current_user.getRole() == Role.SUPER_ADMIN) {
+            user = user_service.getUser(id);
+        }
+
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found"));
         }
@@ -103,7 +101,11 @@ public class UserController {
         }
 
         try {
-            User target_user = user_service.getUser(id);
+            User target_user = user_service.getUserBySystem(id, current_user.getSystemId());
+            if (current_user.getRole() == Role.SUPER_ADMIN) {
+                target_user = user_service.getUser(id);
+            }
+
             if (!target_user.acl().canDelete(current_user)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
             }
@@ -122,7 +124,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
-        return ResponseEntity.ok(user_service.searchUsers((query))
+        return ResponseEntity.ok(user_service.searchUsers(query, current_user)
                 .stream().map(User::releaseCompact).collect(Collectors.toList()));
     }
 
@@ -133,7 +135,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
-        User user = user_service.getUser(id);
+        User user = user_service.getUserBySystem(id, current_user.getSystemId());
+        if (current_user.getRole() == Role.SUPER_ADMIN) {
+            user = user_service.getUser(id);
+        }
+
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found"));
         }
@@ -157,7 +163,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
-        User user = user_service.getUser(id);
+        User user = user_service.getUserBySystem(id, current_user.getSystemId());
+        if (current_user.getRole() == Role.SUPER_ADMIN) {
+            user = user_service.getUser(id);
+        }
+
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found"));
         }
@@ -181,7 +191,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
-        User user = user_service.getUser(id);
+        User user = user_service.getUserBySystem(id, current_user.getSystemId());
+        if (current_user.getRole() == Role.SUPER_ADMIN) {
+            user = user_service.getUser(id);
+        }
+
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found"));
         }
@@ -205,7 +219,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
-        User user = user_service.getUser(id);
+        User user = user_service.getUserBySystem(id, current_user.getSystemId());
+        if (current_user.getRole() == Role.SUPER_ADMIN) {
+            user = user_service.getUser(id);
+        }
+
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found"));
         }
@@ -229,7 +247,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
-        User user = user_service.getUser(id);
+        User user = user_service.getUserBySystem(id, current_user.getSystemId());
+        if (current_user.getRole() == Role.SUPER_ADMIN) {
+            user = user_service.getUser(id);
+        }
+
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found"));
         }

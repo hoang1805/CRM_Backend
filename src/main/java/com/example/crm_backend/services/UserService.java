@@ -1,7 +1,9 @@
 package com.example.crm_backend.services;
 
+import aj.org.objectweb.asm.commons.Remapper;
 import com.example.crm_backend.dtos.UserDTO;
 import com.example.crm_backend.dtos.UserPasswordDTO;
+import com.example.crm_backend.entities.system.System;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.entities.user.UserValidator;
 import com.example.crm_backend.enums.Role;
@@ -26,13 +28,20 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository user_repository;
 
+    private final SystemService system_service;
+
     @Autowired
-    public UserService(UserRepository user_repository) {
+    public UserService(UserRepository user_repository, SystemService systemService) {
         this.user_repository = user_repository;
+        system_service = systemService;
     }
 
     public List<User> getUsers() {
         return user_repository.findAll();
+    }
+
+    public User getUserBySystem(Long id, Long system_id) {
+        return user_repository.findByIdAndSystemId(id, system_id).orElse(null);
     }
 
     public User getUser(Long id) {
@@ -53,7 +62,25 @@ public class UserService {
         return user.orElse(null);
     }
 
+    public long countBySystemId(Long system_id) {
+        return user_repository.countBySystemId(system_id);
+    }
+
     public User createUser(User user, User creator) {
+        Long system_id = creator.getCreatorId();
+        if (creator.getRole() == Role.SUPER_ADMIN) {
+            system_id = user.getSystemId();
+        }
+
+        System system = system_service.getById(system_id);
+        if (system == null) {
+            throw new RuntimeException("System not found");
+        }
+
+        if (this.countBySystemId(system_id) >= system.getMaxUser()) {
+            throw new RuntimeException("Can't create user after system max user");
+        }
+
         user.setPassword("123456");
         user.setRole(Role.STAFF);
         UserValidator validator = new UserValidator(user, this);
@@ -63,6 +90,7 @@ public class UserService {
         user.setLastUpdate(Timer.now());
         user.setCreatedAt(Timer.now());
         user.setCreatorId(creator.getId());
+        user.setSystemId(system_id);
         return user_repository.save(user);
     }
 
@@ -78,7 +106,12 @@ public class UserService {
 
     public User updateUser(Long user_id, UserDTO userDTO) {
         User user = getUser(user_id);
+
         if (user == null) {
+            throw new IllegalStateException("User does not exist");
+        }
+
+        if (user.getRole() != Role.SUPER_ADMIN && !system_service.existsById(user.getSystemId())) {
             throw new IllegalStateException("User does not exist");
         }
 
@@ -113,6 +146,10 @@ public class UserService {
             throw new IllegalStateException("User does not exist");
         }
 
+        if (user.getRole() != Role.SUPER_ADMIN && !system_service.existsById(user.getSystemId())) {
+            throw new IllegalStateException("User does not exist");
+        }
+
         if (!Encoder.verifyPassword(userDTO.getOldPassword(), user.getPassword())) {
             throw new IllegalStateException("Password does not match");
         }
@@ -139,18 +176,35 @@ public class UserService {
         return user_repository.findAll(request);
     }
 
-    public List<User> loadUsers(List<Long> user_ids) {
-        user_ids = user_ids.stream().distinct().collect(Collectors.toList());
-        return user_repository.findByIdIn(user_ids);
+    public Page<User> paginateBySystem(int ipp, int page, Long systemId) {
+        Pageable request = PageRequest.of(page, ipp, Sort.by(Sort.Direction.DESC, "id"));
+        return user_repository.findBySystemId(systemId, request);
     }
 
-    public List<User> searchUsers(String query) {
-        return user_repository.searchUsers(query);
+    public List<User> loadUsers(List<Long> user_ids, User current_user) {
+        user_ids = user_ids.stream().distinct().collect(Collectors.toList());
+        if (current_user.getRole().equals(Role.SUPER_ADMIN)) {
+            return user_repository.findByIdIn(user_ids);
+        }
+
+        return user_repository.findByIdInAndSystemId(user_ids, current_user.getSystemId());
+    }
+
+    public List<User> searchUsers(String query, User current_user) {
+        if (current_user.getRole().equals(Role.SUPER_ADMIN)) {
+            return user_repository.searchUsers(query);
+        }
+
+        return user_repository.searchUsers(query, current_user.getSystemId());
     }
 
     public User grantManager(Long id) {
         User user = getUser(id);
         if (user == null) {
+            throw new IllegalStateException("User does not exist");
+        }
+
+        if (user.getRole() != Role.SUPER_ADMIN && !system_service.existsById(user.getSystemId())) {
             throw new IllegalStateException("User does not exist");
         }
 
@@ -165,7 +219,26 @@ public class UserService {
             throw new IllegalStateException("User does not exist");
         }
 
+        if (user.getRole() != Role.SUPER_ADMIN && !system_service.existsById(user.getSystemId())) {
+            throw new IllegalStateException("User does not exist");
+        }
+
         user.setRole(Role.STAFF);
+        user.setLastUpdate(Timer.now());
+        return user_repository.save(user);
+    }
+
+    public User grantAdmin(Long id) {
+        User user = getUser(id);
+        if (user == null) {
+            throw new IllegalStateException("User does not exist");
+        }
+
+        if (user.getRole() != Role.SUPER_ADMIN && !system_service.existsById(user.getSystemId())) {
+            throw new IllegalStateException("User does not exist");
+        }
+
+        user.setRole(Role.ADMIN);
         user.setLastUpdate(Timer.now());
         return user_repository.save(user);
     }
@@ -173,6 +246,10 @@ public class UserService {
     public User resetPassword(Long id) {
         User user = getUser(id);
         if (user == null) {
+            throw new IllegalStateException("User does not exist");
+        }
+
+        if (user.getRole() != Role.SUPER_ADMIN && !system_service.existsById(user.getSystemId())) {
             throw new IllegalStateException("User does not exist");
         }
 
