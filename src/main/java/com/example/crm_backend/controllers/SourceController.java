@@ -114,7 +114,7 @@ public class SourceController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
-        return ResponseEntity.ok(source_service.search(query)
+        return ResponseEntity.ok(source_service.search(query, current_user)
                 .stream().map(Source::releaseCompact).collect(Collectors.toList()));
     }
 }
