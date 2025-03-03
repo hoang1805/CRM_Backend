@@ -4,6 +4,7 @@ import com.example.crm_backend.dtos.RelationshipDTO;
 import com.example.crm_backend.entities.relationship.Relationship;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.enums.Role;
+import com.example.crm_backend.services.NotificationService;
 import com.example.crm_backend.services.RelationshipService;
 import com.example.crm_backend.services.UserService;
 import com.example.crm_backend.utils.SessionHelper;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -24,10 +26,13 @@ public class RelationshipController {
 
     private final UserService user_service;
 
+    private final NotificationService notification_service;
+
     @Autowired
-    public RelationshipController(RelationshipService relationship_service, UserService user_service) {
+    public RelationshipController(RelationshipService relationship_service, UserService user_service, NotificationService notificationService) {
         this.relationship_service = relationship_service;
         this.user_service = user_service;
+        notification_service = notificationService;
     }
 
     @GetMapping("/list")
@@ -78,6 +83,8 @@ public class RelationshipController {
 
         try {
             Relationship relationship = relationship_service.edit(id, relationship_DTO);
+            notification_service.notify(current_user, List.of(relationship.getCreatorId()),  "${user} edited Relationship ${object_name}", relationship.getName(), relationship.getLink());
+
             return ResponseEntity.ok(Map.of("relationship", relationship.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -102,6 +109,8 @@ public class RelationshipController {
 
         try {
             Relationship relationship = relationship_service.editColor(id, relationship_DTO);
+            notification_service.notify(current_user, List.of(relationship.getCreatorId()),  "${user} edited Relationship ${object_name}", relationship.getName(), relationship.getLink());
+
             return ResponseEntity.ok(Map.of("relationship", relationship.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -126,6 +135,8 @@ public class RelationshipController {
 
         try {
             relationship_service.delete(id);
+            notification_service.notify(current_user, List.of(current_relationship.getCreatorId()),  "${user} deleted Relationship ${object_name}", current_relationship.getName());
+
             return ResponseEntity.ok(Map.of("message", "Delete successfully"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));

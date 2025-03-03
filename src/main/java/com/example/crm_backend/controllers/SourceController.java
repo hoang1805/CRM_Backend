@@ -4,6 +4,7 @@ import com.example.crm_backend.dtos.SourceDTO;
 import com.example.crm_backend.entities.source.Source;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.enums.Role;
+import com.example.crm_backend.services.NotificationService;
 import com.example.crm_backend.services.SourceService;
 import com.example.crm_backend.services.UserService;
 import com.example.crm_backend.utils.SessionHelper;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -24,10 +26,13 @@ public class SourceController {
 
     private final UserService user_service;
 
+    private final NotificationService notification_service;
+
     @Autowired
-    public SourceController(SourceService source_service, UserService user_service) {
+    public SourceController(SourceService source_service, UserService user_service, NotificationService notificationService) {
         this.source_service = source_service;
         this.user_service = user_service;
+        notification_service = notificationService;
     }
 
     @GetMapping("/list")
@@ -82,6 +87,8 @@ public class SourceController {
 
         try {
             Source source = source_service.edit(id, source_DTO);
+            notification_service.notify(current_user, List.of(source.getCreatorId()), "${user} edited Source ${object_name}", source.getName(), source.getLink());
+
             return ResponseEntity.ok(Map.of("source", source.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -110,6 +117,8 @@ public class SourceController {
 
         try {
             source_service.delete(id);
+            notification_service.notify(current_user, List.of(current_source.getCreatorId()), "${user} deleted Source ${object_name}", current_source.getName());
+
             return ResponseEntity.ok(Map.of("message", "Delete successfully"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));

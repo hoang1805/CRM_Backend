@@ -1,6 +1,7 @@
 package com.example.crm_backend.entities.relationship;
 
 import com.example.crm_backend.dtos.RelationshipDTO;
+import com.example.crm_backend.entities.HasLink;
 import com.example.crm_backend.entities.Releasable;
 import com.example.crm_backend.entities.user.User;
 import jakarta.persistence.*;
@@ -13,7 +14,7 @@ import java.util.Map;
 @Table(name = "relationships")
 @Getter
 @Setter
-public class Relationship implements Releasable<RelationshipDTO> {
+public class Relationship implements Releasable<RelationshipDTO>, HasLink {
 
     @Id
     @GeneratedValue(
@@ -115,5 +116,10 @@ public class Relationship implements Releasable<RelationshipDTO> {
                 ", created_at=" + createdAt +
                 ", last_update=" + lastUpdate +
                 '}';
+    }
+
+    @Override
+    public String getLink() {
+        return "/settings/relationships";
     }
 }

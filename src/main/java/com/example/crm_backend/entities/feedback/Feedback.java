@@ -1,17 +1,21 @@
 package com.example.crm_backend.entities.feedback;
 
 import com.example.crm_backend.dtos.FeedbackDTO;
+import com.example.crm_backend.entities.HasLink;
 import com.example.crm_backend.entities.Releasable;
+import com.example.crm_backend.entities.account.Account;
 import com.example.crm_backend.entities.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "feedbacks")
 @Getter
 @Setter
-public class Feedback implements Releasable<FeedbackDTO> {
+public class Feedback implements Releasable<FeedbackDTO>, HasLink {
     @Id
     @GeneratedValue(
             strategy = GenerationType.IDENTITY
@@ -82,5 +86,14 @@ public class Feedback implements Releasable<FeedbackDTO> {
     @Override
     public FeedbackDTO releaseCompact() {
         return null;
+    }
+
+    @Override
+    public String getLink() {
+        if (Objects.equals(objectType, "account")) {
+            return "/account/" + objectId + "?tab=feedback";
+        }
+
+        return "";
     }
 }

@@ -2,6 +2,7 @@ package com.example.crm_backend.entities.account;
 
 import com.example.crm_backend.dtos.account.AccountDTO;
 import com.example.crm_backend.entities.Exportable;
+import com.example.crm_backend.entities.HasLink;
 import com.example.crm_backend.entities.Releasable;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.enums.Gender;
@@ -15,7 +16,7 @@ import java.util.Map;
 @Table(name = "accounts")
 @Getter
 @Setter
-public class Account implements Releasable<AccountDTO>, Exportable {
+public class Account implements Releasable<AccountDTO>, Exportable, HasLink {
     @Id
     @GeneratedValue(
             strategy = GenerationType.IDENTITY
@@ -172,5 +173,10 @@ public class Account implements Releasable<AccountDTO>, Exportable {
                 "id", getId(),
                 "name", "account"
         );
+    }
+
+    @Override
+    public String getLink() {
+        return "/account/" + getId();
     }
 }

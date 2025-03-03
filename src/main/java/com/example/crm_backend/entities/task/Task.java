@@ -1,6 +1,7 @@
 package com.example.crm_backend.entities.task;
 
 import com.example.crm_backend.dtos.TaskDTO;
+import com.example.crm_backend.entities.HasLink;
 import com.example.crm_backend.entities.Releasable;
 import com.example.crm_backend.entities.user.User;
 import jakarta.persistence.*;
@@ -13,7 +14,7 @@ import java.util.Map;
 @Table(name = "tasks")
 @Getter
 @Setter
-public class Task implements Releasable<TaskDTO> {
+public class Task implements Releasable<TaskDTO>, HasLink {
 
     @Transient
     public static final int DRAFT = 10;
@@ -165,5 +166,14 @@ public class Task implements Releasable<TaskDTO> {
     @Override
     public TaskDTO releaseCompact() {
         return null;
+    }
+
+    @Override
+    public String getLink() {
+        if (accountId == null) {
+            return "/tasks";
+        }
+
+        return "/account/" + accountId + "?tab=task";
     }
 }

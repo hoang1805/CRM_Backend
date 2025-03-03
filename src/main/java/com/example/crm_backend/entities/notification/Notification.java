@@ -38,6 +38,8 @@ public class Notification implements Releasable<NotificationDTO> {
     @Convert(converter = MapConverter.class)
     private Map<String, String> additional;
 
+    private String url;
+
     @Column(name = "created_at")
     private Long createdAt;
 
@@ -50,13 +52,14 @@ public class Notification implements Releasable<NotificationDTO> {
     public Notification() {
     }
 
-    public Notification(Long id, Long targetId, Long sourceId, String message, boolean isRead, Map<String, String> additional, Long createdAt, Long lastUpdate, Long systemId) {
+    public Notification(Long id, Long targetId, Long sourceId, String message, boolean isRead, Map<String, String> additional, String url, Long createdAt, Long lastUpdate, Long systemId) {
         this.id = id;
         this.targetId = targetId;
         this.sourceId = sourceId;
         this.message = message;
         this.isRead = isRead;
         this.additional = additional;
+        this.url = url;
         this.createdAt = createdAt;
         this.lastUpdate = lastUpdate;
         this.systemId = systemId;
@@ -68,6 +71,7 @@ public class Notification implements Releasable<NotificationDTO> {
         this.message = message;
         this.isRead = false;
         this.additional = new HashMap<>();
+        this.url = "";
         this.createdAt = Timer.now();
         this.lastUpdate = Timer.now();
         this.systemId = systemId;
@@ -79,6 +83,31 @@ public class Notification implements Releasable<NotificationDTO> {
         this.message = message;
         this.isRead = false;
         this.additional = additional;
+        this.url = "";
+        this.createdAt = Timer.now();
+        this.lastUpdate = Timer.now();
+        this.systemId = systemId;
+    }
+
+    public Notification(Long targetId, Long sourceId, String message, String url, Long systemId) {
+        this.targetId = targetId;
+        this.sourceId = sourceId;
+        this.message = message;
+        this.isRead = false;
+        this.additional = new HashMap<>();
+        this.url = url;
+        this.createdAt = Timer.now();
+        this.lastUpdate = Timer.now();
+        this.systemId = systemId;
+    }
+
+    public Notification(Long targetId, Long sourceId, String message, Map<String, String> additional, String url, Long systemId) {
+        this.targetId = targetId;
+        this.sourceId = sourceId;
+        this.message = message;
+        this.isRead = false;
+        this.additional = additional;
+        this.url = url;
         this.createdAt = Timer.now();
         this.lastUpdate = Timer.now();
         this.systemId = systemId;
@@ -86,12 +115,15 @@ public class Notification implements Releasable<NotificationDTO> {
 
     @Override
     public NotificationDTO release(User session_user) {
-        return null;
+        NotificationDTO dto = new NotificationDTO();
+        dto.setId(id).setAdditional(additional).setRead(isRead)
+                .setTargetId(targetId).setSourceId(sourceId).setMessage(message).setSystemId(systemId);
+        return dto;
     }
 
     @Override
     public NotificationDTO release() {
-        return null;
+        return release(null);
     }
 
     @Override

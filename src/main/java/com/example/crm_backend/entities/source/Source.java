@@ -1,6 +1,7 @@
 package com.example.crm_backend.entities.source;
 
 import com.example.crm_backend.dtos.SourceDTO;
+import com.example.crm_backend.entities.HasLink;
 import com.example.crm_backend.entities.Releasable;
 import com.example.crm_backend.entities.user.User;
 import jakarta.annotation.Nullable;
@@ -15,7 +16,7 @@ import java.util.Objects;
 @Table(name = "sources")
 @Getter
 @Setter
-public class Source implements Releasable<SourceDTO> {
+public class Source implements Releasable<SourceDTO>, HasLink {
     @Id
     @GeneratedValue(
             strategy = GenerationType.IDENTITY
@@ -112,5 +113,10 @@ public class Source implements Releasable<SourceDTO> {
     @Override
     public SourceDTO releaseCompact() {
         return releaseCompact(null);
+    }
+
+    @Override
+    public String getLink() {
+        return "/settings/sources";
     }
 }

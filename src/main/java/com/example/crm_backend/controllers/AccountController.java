@@ -5,6 +5,7 @@ import com.example.crm_backend.dtos.UserDTO;
 import com.example.crm_backend.entities.account.Account;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.enums.Role;
+import com.example.crm_backend.services.NotificationService;
 import com.example.crm_backend.services.account.AccountExporter;
 import com.example.crm_backend.services.account.AccountImporter;
 import com.example.crm_backend.services.account.AccountService;
@@ -42,12 +43,15 @@ public class AccountController {
 
     private final AccountExporter account_exporter;
 
+    private final NotificationService notification_service;
+
     @Autowired
-    public AccountController(AccountService account_service, UserService user_service, AccountImporter accountImporter, AccountExporter accountExporter) {
+    public AccountController(AccountService account_service, UserService user_service, AccountImporter accountImporter, AccountExporter accountExporter, NotificationService notificationService) {
         this.account_service = account_service;
         this.user_service = user_service;
         account_importer = accountImporter;
         account_exporter = accountExporter;
+        notification_service = notificationService;
     }
 
     @GetMapping("/{id}")
@@ -121,6 +125,8 @@ public class AccountController {
 
         try {
             Account edited = account_service.edit(id, account_DTO);
+            notification_service.notify(current_user, List.of(edited.getCreatorId(), edited.getAssignedUserId(), edited.getReferrerId()), "${user} edited Account ${object_name} that you followed", edited.getName(), edited.getLink());
+
             return ResponseEntity.ok(Map.of("account", edited.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -145,6 +151,7 @@ public class AccountController {
 
         try {
             account_service.deleteAccount(id);
+            notification_service.notify(current_user, List.of(account.getCreatorId(), account.getAssignedUserId(), account.getReferrerId()), "${user} Account deleted ${object_name} that you followed", account.getName());
             return ResponseEntity.ok("Xóa thành công!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

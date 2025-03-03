@@ -4,6 +4,7 @@ import com.example.crm_backend.dtos.UserPasswordDTO;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.dtos.UserDTO;
 import com.example.crm_backend.enums.Role;
+import com.example.crm_backend.services.NotificationService;
 import com.example.crm_backend.services.UserService;
 import com.example.crm_backend.utils.SessionHelper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -22,9 +24,12 @@ import java.util.stream.Collectors;
 public class UserController {
     private final UserService user_service;
 
+    private final NotificationService notification_service;
+
     @Autowired
-    public UserController(UserService user_service) {
+    public UserController(UserService user_service, NotificationService notificationService) {
         this.user_service = user_service;
+        notification_service = notificationService;
     }
 
     @GetMapping("/list")
@@ -211,6 +216,7 @@ public class UserController {
 
         try {
             user = user_service.grantManager(id);
+            notification_service.notify(current_user, List.of(user.getId()), "${user} grant manager role to you", "", user.getLink(), user.getSystemId());
             return ResponseEntity.ok(Map.of("user", user.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -239,6 +245,7 @@ public class UserController {
 
         try {
             user = user_service.grantAdmin(id);
+            notification_service.notify(current_user, List.of(user.getId()), "${user} grant admin role to you", "", user.getLink(), user.getSystemId());
             return ResponseEntity.ok(Map.of("user", user.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -271,6 +278,7 @@ public class UserController {
 
         try {
             user = user_service.grantStaff(id);
+            notification_service.notify(current_user, List.of(user.getId()), "${user} grant staff role to you", "", user.getLink(), user.getSystemId());
             return ResponseEntity.ok(Map.of("user", user.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));

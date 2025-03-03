@@ -1,6 +1,7 @@
 package com.example.crm_backend.entities.account.product;
 
 import com.example.crm_backend.dtos.account.AccountProductDTO;
+import com.example.crm_backend.entities.HasLink;
 import com.example.crm_backend.entities.Releasable;
 import com.example.crm_backend.entities.user.User;
 import jakarta.persistence.*;
@@ -13,7 +14,7 @@ import java.util.Map;
 @Table(name = "AccountProducts")
 @Getter
 @Setter
-public class AccountProduct implements Releasable<AccountProductDTO> {
+public class AccountProduct implements Releasable<AccountProductDTO>, HasLink {
     @Id
     @GeneratedValue(
             strategy = GenerationType.IDENTITY
@@ -134,5 +135,10 @@ public class AccountProduct implements Releasable<AccountProductDTO> {
     @Override
     public AccountProductDTO releaseCompact() {
         return releaseCompact(null);
+    }
+
+    @Override
+    public String getLink() {
+        return "/account/" + accountId + "?tab=product";
     }
 }

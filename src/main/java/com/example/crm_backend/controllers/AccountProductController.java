@@ -1,10 +1,13 @@
 package com.example.crm_backend.controllers;
 
 import com.example.crm_backend.dtos.account.AccountProductDTO;
+import com.example.crm_backend.entities.account.Account;
 import com.example.crm_backend.entities.account.product.AccountProduct;
 import com.example.crm_backend.entities.user.User;
+import com.example.crm_backend.services.NotificationService;
 import com.example.crm_backend.services.account.AccountProductService;
 import com.example.crm_backend.services.UserService;
+import com.example.crm_backend.services.account.AccountService;
 import com.example.crm_backend.utils.SessionHelper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,10 +26,16 @@ public class AccountProductController {
 
     private final AccountProductService account_product_service;
 
+    private final NotificationService notification_service;
+
+    private final AccountService account_service;
+
     @Autowired
-    public AccountProductController(UserService user_service, AccountProductService account_product_service) {
+    public AccountProductController(UserService user_service, AccountProductService account_product_service, NotificationService notificationService, AccountService accountService) {
         this.user_service = user_service;
         this.account_product_service = account_product_service;
+        notification_service = notificationService;
+        account_service = accountService;
     }
 
     @GetMapping("/{id}")
@@ -80,6 +90,8 @@ public class AccountProductController {
 
         try {
             AccountProduct edited_ap = account_product_service.edit(id, dto);
+            Account account = account_service.getAccount(edited_ap.getAccountId());
+            notification_service.notify(current_user, List.of(edited_ap.getCreatorId(), account.getCreatorId(), account.getAssignedUserId(), account.getReferrerId()), "${user} edited Product ${object_name} that you followed", edited_ap.getName(), edited_ap.getLink());
             return ResponseEntity.ok(Map.of("account_product", edited_ap.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -104,6 +116,9 @@ public class AccountProductController {
 
         try {
             account_product_service.delete(id);
+            Account account = account_service.getAccount(ap.getAccountId());
+            notification_service.notify(current_user, List.of(ap.getCreatorId(), account.getCreatorId(), account.getAssignedUserId(), account.getReferrerId()), "${user} deleted Product ${object_name} that you followed", ap.getName());
+
             return ResponseEntity.ok(Map.of("message", "Delete successfully"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
