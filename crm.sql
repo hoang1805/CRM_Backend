@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 25, 2025 at 08:29 AM
+-- Generation Time: Mar 03, 2025 at 10:57 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
     `relationship_id` bigint(20) DEFAULT NULL,
     `source_id` bigint(20) DEFAULT NULL,
     `referrer_id` bigint(20) DEFAULT NULL,
+    `system_id` bigint(20) DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `relationship_id` (`relationship_id`),
     KEY `code_2` (`code`)
@@ -86,6 +87,7 @@ CREATE TABLE IF NOT EXISTS `account_products` (
     `price` float DEFAULT NULL,
     `quantity` bigint(20) DEFAULT NULL,
     `tax` float DEFAULT NULL,
+    `system_id` bigint(20) DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `account_id` (`account_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -104,6 +106,7 @@ CREATE TABLE IF NOT EXISTS `feedbacks` (
     `object_id` bigint(20) DEFAULT NULL,
     `object_type` varchar(255) DEFAULT NULL,
     `rating` bigint(20) DEFAULT NULL,
+    `system_id` bigint(20) DEFAULT NULL,
     PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -121,6 +124,8 @@ CREATE TABLE IF NOT EXISTS `relationships` (
     `description` varchar(255) DEFAULT NULL,
     `last_update` bigint(20) DEFAULT NULL,
     `name` varchar(255) DEFAULT NULL,
+    `create_at` bigint(20) DEFAULT NULL,
+    `system_id` bigint(20) DEFAULT NULL,
     PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -138,8 +143,24 @@ CREATE TABLE IF NOT EXISTS `sources` (
     `last_update` bigint(20) DEFAULT NULL,
     `name` varchar(255) DEFAULT NULL,
     `parent_id` bigint(20) DEFAULT NULL,
+    `system_id` bigint(20) DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `code_2` (`code`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `systems`
+--
+
+CREATE TABLE IF NOT EXISTS `systems` (
+                                         `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `created_at` bigint(20) DEFAULT NULL,
+    `last_update` bigint(20) DEFAULT NULL,
+    `max_user` bigint(20) DEFAULT NULL,
+    `name` varchar(255) DEFAULT NULL,
+    PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -164,6 +185,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
     `project` varchar(255) DEFAULT NULL,
     `start_date` bigint(20) DEFAULT NULL,
     `status` bigint(20) DEFAULT NULL,
+    `system_id` bigint(20) DEFAULT NULL,
     PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -184,10 +206,11 @@ CREATE TABLE IF NOT EXISTS `users` (
     `title` varchar(255) DEFAULT NULL,
     `role` varchar(255) NOT NULL,
     `sign` varchar(255) DEFAULT NULL,
-    `password` text DEFAULT NULL,
+    `password` varchar(255) DEFAULT NULL,
     `creator_id` bigint(20) DEFAULT NULL,
     `created_at` bigint(20) DEFAULT NULL,
     `last_update` bigint(20) DEFAULT NULL,
+    `system_id` bigint(20) DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `users_email` (`email`),
     KEY `users_username` (`username`) USING BTREE,
