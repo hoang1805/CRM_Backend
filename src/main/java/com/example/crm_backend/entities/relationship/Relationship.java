@@ -30,7 +30,7 @@ public class Relationship implements Releasable<RelationshipDTO> {
     @Column(name = "creator_id")
     private Long creatorId;
 
-    @Column(name = "create_at")
+    @Column(name = "created_at")
     private Long createdAt;
 
     @Column(name = "last_update")
