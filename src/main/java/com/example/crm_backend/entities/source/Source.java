@@ -87,9 +87,9 @@ public class Source implements Releasable<SourceDTO> {
     public SourceDTO release(User session_user) {
         SourceDTO source_DTO = new SourceDTO();
         source_DTO.setId(id).setName(name).setCode(code).setParentId(parentId)
-                .setCreatorId(creatorId).setCreatedAt(createdAt).setLastUpdate(lastUpdate);
+                .setCreatorId(creatorId).setCreatedAt(createdAt).setLastUpdate(lastUpdate).setSystemId(systemId);
         if (session_user != null) {
-            source_DTO.setACL(Map.of(
+            source_DTO.setAcl(Map.of(
                     "view", this.acl().canView(session_user),
                     "edit", this.acl().canEdit(session_user),
                     "delete", this.acl().canDelete(session_user)

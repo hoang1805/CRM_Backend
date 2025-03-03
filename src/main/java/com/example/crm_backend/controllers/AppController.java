@@ -59,6 +59,9 @@ public class AppController {
         Map<String, Object> data = new HashMap<>();
 
         List<User> users = user_service.getUsersBySystem(user.getSystemId());
+        if (user.getRole() == Role.SUPER_ADMIN) {
+            users = user_service.getUsers();
+        }
         data.put("users", users.stream().map(User::releaseCompact).collect(Collectors.toList()));
 
         List<Source> sources = source_service.getAllBySystemId(user.getSystemId());

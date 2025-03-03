@@ -78,7 +78,7 @@ public class Relationship implements Releasable<RelationshipDTO> {
     public RelationshipDTO release(User session_user) {
         RelationshipDTO relationship_DTO = new RelationshipDTO();
         relationship_DTO.setId(id).setName(name).setColor(color).setDescription(description)
-                .setCreatorId(creatorId).setCreatedAt(createdAt).setLastUpdate(lastUpdate);
+                .setCreatorId(creatorId).setCreatedAt(createdAt).setLastUpdate(lastUpdate).setSystemId(systemId);
         if (session_user != null) {
             relationship_DTO.setAcl(Map.of(
                     "view", this.acl().canView(session_user),
