@@ -77,15 +77,15 @@ public class AccountController {
         }
 
         Page<Account> accounts = null;
-        if (Objects.equals(current_user.getRole(), Role.ADMIN)) {
+        if (Objects.equals(current_user.getRole(), Role.SUPER_ADMIN)) {
             accounts = account_service.paginate(ipp, page, query, relationship_id);
         } else {
-            accounts = account_service.paginate(ipp, page, query, relationship_id);
+            accounts = account_service.paginate(ipp, page, query, relationship_id, current_user.getSystemId());
 //            accounts = account_service.paginate(ipp, page, query, relationship_id, current_user);
         }
         Page<AccountDTO> data = accounts.map(account -> account.release(current_user));
 
-        return ResponseEntity.ok(facet(data));
+        return ResponseEntity.ok(facet(data, current_user));
     }
 
     @PostMapping("/create")
@@ -183,15 +183,15 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
-        List<Account> accounts = account_service.searchAccounts(query);
+        List<Account> accounts = account_service.searchAccounts(query, current_user);
         return ResponseEntity.ok(accounts.stream().map(Account::releaseCompact).collect(Collectors.toList()));
     }
 
-    private Page<AccountDTO> facet(Page<AccountDTO> data) {
-        List<Long> user_ids = data.stream().flatMap(account -> Stream.of(account.getAssignedUserId(), account.getCreatorId())).filter(Objects::nonNull).toList();
-        List<User> users = user_service.loadUsers(user_ids);
-        Map<Long, UserDTO> map = users.stream()
-                .collect(Collectors.toMap(User::getId, User::releaseCompact));
+    private Page<AccountDTO> facet(Page<AccountDTO> data, User current_user) {
+//        List<Long> user_ids = data.stream().flatMap(account -> Stream.of(account.getAssignedUserId(), account.getCreatorId())).filter(Objects::nonNull).toList();
+//        List<User> users = user_service.loadUsers(user_ids, current_user);
+//        Map<Long, UserDTO> map = users.stream()
+//                .collect(Collectors.toMap(User::getId, User::releaseCompact));
 
         return data.map(account -> {
 //            account.setCreatorExport(map.get(account.getCreatorId()));

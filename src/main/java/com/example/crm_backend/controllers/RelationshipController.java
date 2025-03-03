@@ -37,7 +37,11 @@ public class RelationshipController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
-        return ResponseEntity.ok(relationship_service.getAll().stream().map(relationship -> relationship.release(current_user)).collect(Collectors.toList()));
+        if (current_user.getRole() == Role.SUPER_ADMIN) {
+            return ResponseEntity.ok(relationship_service.getAll().stream().map(relationship -> relationship.release(current_user)).collect(Collectors.toList()));
+        }
+
+        return ResponseEntity.ok(relationship_service.getAllBySystemId(current_user.getSystemId()).stream().map(relationship -> relationship.release(current_user)).collect(Collectors.toList()));
     }
 
     @PostMapping("/create")

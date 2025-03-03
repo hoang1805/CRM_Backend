@@ -4,11 +4,15 @@ import com.example.crm_backend.dtos.RelationshipDTO;
 import com.example.crm_backend.entities.Releasable;
 import com.example.crm_backend.entities.user.User;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Map;
 
 @Entity
 @Table(name = "relationships")
+@Getter
+@Setter
 public class Relationship implements Releasable<RelationshipDTO> {
 
     @Id
@@ -23,11 +27,17 @@ public class Relationship implements Releasable<RelationshipDTO> {
 
     private String description;
 
-    private Long creator_id;
+    @Column(name = "creator_id")
+    private Long creatorId;
 
-    private Long created_at;
+    @Column(name = "create_at")
+    private Long createdAt;
 
-    private Long last_update;
+    @Column(name = "last_update")
+    private Long lastUpdate;
+
+    @Column(name = "system_id")
+    private Long systemId;
 
     @Transient
     private RelationshipACL acl = null;
@@ -35,79 +45,25 @@ public class Relationship implements Releasable<RelationshipDTO> {
     public Relationship() {
     }
 
-    public Relationship(Long id, String name, String color, String description, Long creator_id, Long created_at, Long last_update) {
+    public Relationship(Long id, String name, String color, String description, Long creatorId, Long createdAt, Long lastUpdate, Long systemId) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.description = description;
-        this.creator_id = creator_id;
-        this.created_at = created_at;
-        this.last_update = last_update;
+        this.creatorId = creatorId;
+        this.createdAt = createdAt;
+        this.lastUpdate = lastUpdate;
+        this.systemId = systemId;
     }
 
-    public Relationship(String name, String color, String description, Long creator_id, Long created_at, Long last_update) {
+    public Relationship(String name, String color, String description, Long creatorId, Long createdAt, Long lastUpdate, Long systemId) {
         this.name = name;
         this.color = color;
         this.description = description;
-        this.creator_id = creator_id;
-        this.created_at = created_at;
-        this.last_update = last_update;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Long getCreatorId() {
-        return creator_id;
-    }
-
-    public void setCreatorId(Long creator_id) {
-        this.creator_id = creator_id;
-    }
-
-    public Long getCreatedAt() {
-        return created_at;
-    }
-
-    public void setCreatedAt(Long created_at) {
-        this.created_at = created_at;
-    }
-
-    public Long getLastUpdate() {
-        return last_update;
-    }
-
-    public void setLastUpdate(Long last_update) {
-        this.last_update = last_update;
+        this.creatorId = creatorId;
+        this.createdAt = createdAt;
+        this.lastUpdate = lastUpdate;
+        this.systemId = systemId;
     }
 
     public RelationshipACL acl() {
@@ -122,7 +78,7 @@ public class Relationship implements Releasable<RelationshipDTO> {
     public RelationshipDTO release(User session_user) {
         RelationshipDTO relationship_DTO = new RelationshipDTO();
         relationship_DTO.setId(id).setName(name).setColor(color).setDescription(description)
-                .setCreatorId(creator_id).setCreatedAt(created_at).setLastUpdate(last_update);
+                .setCreatorId(creatorId).setCreatedAt(createdAt).setLastUpdate(lastUpdate).setSystemId(systemId);
         if (session_user != null) {
             relationship_DTO.setAcl(Map.of(
                     "view", this.acl().canView(session_user),
@@ -155,9 +111,9 @@ public class Relationship implements Releasable<RelationshipDTO> {
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
                 ", description='" + description + '\'' +
-                ", creator_id=" + creator_id +
-                ", created_at=" + created_at +
-                ", last_update=" + last_update +
+                ", creator_id=" + creatorId +
+                ", created_at=" + createdAt +
+                ", last_update=" + lastUpdate +
                 '}';
     }
 }

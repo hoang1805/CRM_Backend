@@ -53,6 +53,9 @@ public class TaskDTO {
     @JsonProperty("last_update")
     private Long lastUpdate;
 
+    @JsonProperty("system_id")
+    private Long systemId;
+
     @JsonProperty("account_export")
     private AccountDTO accountExport = null;
 
@@ -62,7 +65,7 @@ public class TaskDTO {
 
     }
 
-    public TaskDTO(Long id, String name, String description, String note, String project, String attachment, Long startDate, Long endDate, Long status, Long managerId, Long participantId, Long accountId, Long creatorId, Long createdAt, Long lastUpdate) {
+    public TaskDTO(Long id, String name, String description, String note, String project, String attachment, Long startDate, Long endDate, Long status, Long managerId, Long participantId, Long accountId, Long creatorId, Long createdAt, Long lastUpdate, Long systemId) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -78,5 +81,7 @@ public class TaskDTO {
         this.creatorId = creatorId;
         this.createdAt = createdAt;
         this.lastUpdate = lastUpdate;
+        this.systemId = systemId;
     }
+
 }

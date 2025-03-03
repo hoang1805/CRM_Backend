@@ -46,12 +46,15 @@ public class AccountProduct implements Releasable<AccountProductDTO> {
     @Column(name = "last_update")
     private Long lastUpdate;
 
+    @Column(name = "system_id")
+    private Long systemId;
+
     @Transient
     private AccountProductACL acl;
 
     public AccountProduct() {}
 
-    public AccountProduct(Long id, String name, String category, String description, Long quantity, Float price, Float discount, Float tax, Long accountId, Long creatorId, Long createdAt, Long lastUpdate) {
+    public AccountProduct(Long id, String name, String category, String description, Long quantity, Float price, Float discount, Float tax, Long accountId, Long creatorId, Long createdAt, Long lastUpdate, Long systemId) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -64,9 +67,10 @@ public class AccountProduct implements Releasable<AccountProductDTO> {
         this.creatorId = creatorId;
         this.createdAt = createdAt;
         this.lastUpdate = lastUpdate;
+        this.systemId = systemId;
     }
 
-    public AccountProduct(String name, String category, String description, Long quantity, Float price, Float discount, Float tax, Long accountId, Long creatorId, Long createdAt, Long lastUpdate) {
+    public AccountProduct(String name, String category, String description, Long quantity, Float price, Float discount, Float tax, Long accountId, Long creatorId, Long createdAt, Long lastUpdate, Long systemId) {
         this.name = name;
         this.category = category;
         this.description = description;
@@ -78,6 +82,7 @@ public class AccountProduct implements Releasable<AccountProductDTO> {
         this.creatorId = creatorId;
         this.createdAt = createdAt;
         this.lastUpdate = lastUpdate;
+        this.systemId = systemId;
     }
 
     public double getTotal() {

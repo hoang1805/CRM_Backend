@@ -2,11 +2,10 @@ package com.example.crm_backend.controllers;
 
 import com.example.crm_backend.entities.relationship.Relationship;
 import com.example.crm_backend.entities.source.Source;
+import com.example.crm_backend.entities.system.System;
 import com.example.crm_backend.entities.user.User;
-import com.example.crm_backend.services.RelationshipService;
-import com.example.crm_backend.services.SourceService;
-import com.example.crm_backend.services.TaskService;
-import com.example.crm_backend.services.UserService;
+import com.example.crm_backend.enums.Role;
+import com.example.crm_backend.services.*;
 import com.example.crm_backend.services.account.AccountService;
 import com.example.crm_backend.utils.SessionHelper;
 import jakarta.servlet.http.Cookie;
@@ -38,27 +37,43 @@ public class AppController {
 
     private final TaskService task_service;
 
+    private final SystemService system_service;
+
     @Autowired
-    public AppController(UserService user_service, SourceService source_service, RelationshipService relationship_service, AccountService accountService, TaskService taskService) {
+    public AppController(UserService user_service, SourceService source_service, RelationshipService relationship_service, AccountService accountService, TaskService taskService, SystemService systemService) {
         this.user_service = user_service;
         this.source_service = source_service;
         this.relationship_service = relationship_service;
         account_service = accountService;
         task_service = taskService;
+        system_service = systemService;
     }
 
     @GetMapping("/init.load")
-    public ResponseEntity<Object> load(){
+    public ResponseEntity<Object> load(HttpServletRequest request){
+        User user = SessionHelper.getSessionUser(request, user_service);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         Map<String, Object> data = new HashMap<>();
 
-        List<User> users = user_service.getUsers();
+        List<User> users = user_service.getUsersBySystem(user.getSystemId());
+        if (user.getRole() == Role.SUPER_ADMIN) {
+            users = user_service.getUsers();
+        }
         data.put("users", users.stream().map(User::releaseCompact).collect(Collectors.toList()));
 
-        List<Source> sources = source_service.getAll();
+        List<Source> sources = source_service.getAllBySystemId(user.getSystemId());
         data.put("sources", sources.stream().map(Source::releaseCompact).collect(Collectors.toList()));
 
-        List<Relationship> relationships = relationship_service.getAll();
+        List<Relationship> relationships = relationship_service.getAllBySystemId(user.getSystemId());
         data.put("relationships", relationships.stream().map(Relationship::releaseCompact).collect(Collectors.toList()));
+
+        if (user.getRole() == Role.SUPER_ADMIN) {
+            data.put("systems", system_service.getAll().stream().map(System::releaseCompact).collect(Collectors.toList()));
+        }
+
         return ResponseEntity.ok(data);
     }
 
@@ -86,7 +101,7 @@ public class AppController {
 
         try {
             return ResponseEntity.ok(Map.of(
-                    "accounts", account_service.count(),
+                    "accounts", account_service.count(current_user),
                     "completed_task", task_service.getCompletedTask(current_user),
                     "in_progress", task_service.getProgressTask(current_user),
                     "expired", task_service.getExpiredTask(current_user),

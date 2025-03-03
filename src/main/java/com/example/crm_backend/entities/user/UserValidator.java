@@ -12,8 +12,8 @@ public class UserValidator extends Validator {
     private static final String PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[#?!@$%^&*-_])[A-Za-z\\d#?!@$%^&*-_]{8,}$";
     private static final String PHONE_REGEX = "^(0[3|5|7|8|9])([0-9]{8})$";
 
-    private User user;
-    private UserService user_service;
+    private final User user;
+    private final UserService user_service;
 
     public UserValidator(User user, UserService user_service) {
         this.user = user;
@@ -58,8 +58,16 @@ public class UserValidator extends Validator {
         return this;
     }
 
+    public UserValidator validSystem() {
+        if(user.getSystemId() == null) {
+            throw new IllegalStateException("System id is null");
+        }
+
+        return this;
+    }
+
     public void validate(){
-        validEmail().validPhone();
+        validSystem().validEmail().validPhone();
 
         if (user.getId() == null && user_service.isExisted(user.getUsername(), user.getEmail())) {
             throw new IllegalStateException("User has already existed");

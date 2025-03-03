@@ -34,9 +34,12 @@ public class Feedback implements Releasable<FeedbackDTO> {
     @Column(name = "last_update")
     private Long lastUpdate;
 
+    @Column(name = "system_id")
+    private Long systemId;
+
     public Feedback() {}
 
-    public Feedback(Long id, String objectType, Long objectId, String content, Long rating, Long createdAt, Long lastUpdate) {
+    public Feedback(Long id, String objectType, Long objectId, String content, Long rating, Long createdAt, Long lastUpdate, Long systemId) {
         this.id = id;
         this.objectType = objectType;
         this.objectId = objectId;
@@ -44,15 +47,17 @@ public class Feedback implements Releasable<FeedbackDTO> {
         this.rating = rating;
         this.createdAt = createdAt;
         this.lastUpdate = lastUpdate;
+        this.systemId = systemId;
     }
 
-    public Feedback(String objectType, Long objectId, String content, Long rating, Long createdAt, Long lastUpdate) {
+    public Feedback(String objectType, Long objectId, String content, Long rating, Long createdAt, Long lastUpdate, Long systemId) {
         this.objectType = objectType;
         this.objectId = objectId;
         this.content = content;
         this.rating = rating;
         this.createdAt = createdAt;
         this.lastUpdate = lastUpdate;
+        this.systemId = systemId;
     }
 
     @Override

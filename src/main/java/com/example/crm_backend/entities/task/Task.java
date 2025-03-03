@@ -78,13 +78,16 @@ public class Task implements Releasable<TaskDTO> {
     @Column(name = "last_update")
     private Long lastUpdate;
 
+    @Column(name = "system_id")
+    private Long systemId;
+
     @Transient
     private TaskACL acl;
 
     public Task() {
     }
 
-    public Task(Long id, String name, String description, String note, String project, String attachment, Long startDate, Long endDate, Long status, Long managerId, Long participantId, Long accountId, Long creatorId, Long createdAt, Long lastUpdate) {
+    public Task(Long id, String name, String description, String note, String project, String attachment, Long startDate, Long endDate, Long status, Long managerId, Long participantId, Long accountId, Long creatorId, Long createdAt, Long lastUpdate, Long systemId) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -100,9 +103,10 @@ public class Task implements Releasable<TaskDTO> {
         this.creatorId = creatorId;
         this.createdAt = createdAt;
         this.lastUpdate = lastUpdate;
+        this.systemId = systemId;
     }
 
-    public Task(String name, String description, String note, String project, String attachment, Long startDate, Long endDate, Long status, Long managerId, Long participantId, Long accountId, Long creatorId, Long createdAt, Long lastUpdate) {
+    public Task(String name, String description, String note, String project, String attachment, Long startDate, Long endDate, Long status, Long managerId, Long participantId, Long accountId, Long creatorId, Long createdAt, Long lastUpdate, Long systemId) {
         this.name = name;
         this.description = description;
         this.note = note;
@@ -117,6 +121,7 @@ public class Task implements Releasable<TaskDTO> {
         this.creatorId = creatorId;
         this.createdAt = createdAt;
         this.lastUpdate = lastUpdate;
+        this.systemId = systemId;
     }
 
     public TaskACL acl() {

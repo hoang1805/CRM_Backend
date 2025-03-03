@@ -6,9 +6,9 @@ import com.example.crm_backend.utils.Validator;
 import java.util.Objects;
 
 public class SourceValidator extends Validator {
-    private Source source;
+    private final Source source;
 
-    private SourceService source_service;
+    private final SourceService source_service;
 
     public SourceValidator(Source source, SourceService source_service) {
         this.source = source;

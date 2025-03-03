@@ -4,10 +4,10 @@ import com.example.crm_backend.dtos.SourceDTO;
 import com.example.crm_backend.entities.source.Source;
 import com.example.crm_backend.entities.source.SourceValidator;
 import com.example.crm_backend.entities.user.User;
+import com.example.crm_backend.enums.Role;
 import com.example.crm_backend.repositories.SourceRepository;
 import com.example.crm_backend.utils.ObjectMapper;
 import com.example.crm_backend.utils.Timer;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -20,17 +20,24 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class SourceService {
     private final SourceRepository source_repository;
 
-    public SourceService(SourceRepository source_repository) {
+    private final SystemService system_service;
+
+    public SourceService(SourceRepository source_repository, SystemService systemService) {
         this.source_repository = source_repository;
+        system_service = systemService;
     }
 
     public List<Source> getAll() {
         return source_repository.findAll(Sort.by(DESC, "id"));
     }
 
+    public List<Source> getAllBySystemId(Long system_id) {
+        return source_repository.findBySystemId(system_id, Sort.by(DESC, "id"));
+    }
+
     public boolean isExist(Source source) {
         String code = source.getCode();
-        return !code.isEmpty() && source_repository.existsByCode(code);
+        return !code.isEmpty() && source_repository.existsByCodeAndSystemId(code, source.getSystemId());
     }
 
     public Source getSource(Long id) {
@@ -45,8 +52,13 @@ public class SourceService {
         Source source = new Source();
         ObjectMapper.mapAll(source_DTO, source);
 
+        if (system_service.existsById(creator.getSystemId())) {
+            throw new IllegalStateException("Invalid system id: " + creator.getSystemId());
+        }
+
         try {
             SourceValidator validator = new SourceValidator(source, this);
+            source.setSystemId(creator.getSystemId());
             validator.validate();
             source.setCreatorId(creator.getId());
             source.setCreatedAt(Timer.now());
@@ -62,6 +74,10 @@ public class SourceService {
         Source source = getSource(source_id);
         if (source == null) {
             throw new IllegalStateException("Invalid source. Please try again");
+        }
+
+        if (system_service.existsById(source.getSystemId())) {
+            throw new IllegalStateException("Invalid system id: " + source.getSystemId());
         }
 
         Source new_source = new Source();
@@ -94,7 +110,11 @@ public class SourceService {
         source_repository.deleteById(id);
     }
 
-    public List<Source> search(String query) {
-        return source_repository.searchSources(query);
+    public List<Source> search(String query, User user) {
+        if (user.getRole() == Role.SUPER_ADMIN) {
+            return source_repository.searchSources(query);
+        }
+
+        return source_repository.searchSources(query, user.getSystemId());
     }
 }

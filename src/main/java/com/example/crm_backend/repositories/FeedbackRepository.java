@@ -29,4 +29,6 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
                     "AND (:end = 0 OR created_at <= :end) ",
             nativeQuery = true)
     Page<Feedback> searchFeedbackByAccount(@Param("account_id") String account_id, @Param("query") String query, @Param("start") Long start, @Param("end") Long end, Pageable pageable);
+
+    void deleteBySystemId(Long system_id);
 }

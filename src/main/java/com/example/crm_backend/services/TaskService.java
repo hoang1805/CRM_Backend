@@ -4,6 +4,7 @@ import com.example.crm_backend.dtos.TaskDTO;
 import com.example.crm_backend.entities.task.Task;
 import com.example.crm_backend.entities.task.TaskValidator;
 import com.example.crm_backend.entities.user.User;
+import com.example.crm_backend.enums.Role;
 import com.example.crm_backend.repositories.AccountRepository;
 import com.example.crm_backend.repositories.TaskRepository;
 import com.example.crm_backend.repositories.UserRepository;
@@ -28,16 +29,23 @@ public class TaskService {
 
     private final AccountRepository account_repository;
 
+    private final SystemService system_service;
+
     @Autowired
-    public TaskService(TaskRepository task_repository, UserRepository user_repository, AccountRepository account_repository) {
+    public TaskService(TaskRepository task_repository, UserRepository user_repository, AccountRepository account_repository, SystemService systemService) {
         this.task_repository = task_repository;
         this.user_repository = user_repository;
         this.account_repository = account_repository;
+        system_service = systemService;
     }
 
-    public Page<Task> getTaskByAccount(Long account_id, int ipp, int page, String query, Long manager_id, Long participant_id, Long status) {
+    public Page<Task> getTaskByAccount(User user, Long account_id, int ipp, int page, String query, Long manager_id, Long participant_id, Long status) {
         Pageable request = PageRequest.of(page, ipp, Sort.by(Sort.Direction.DESC, "id"));
-        return task_repository.searchTasks(account_id, query, manager_id, participant_id, status, request);
+        if (user.getRole() == Role.SUPER_ADMIN) {
+            return task_repository.searchTasks(account_id, query, manager_id, participant_id, status, request);
+        }
+
+        return task_repository.searchTasks(account_id, query, manager_id, participant_id, status, user.getSystemId(), request);
     }
 
     public boolean isExistUser(Long id) {
@@ -59,6 +67,7 @@ public class TaskService {
         task.setCreatorId(user.getId());
         task.setCreatedAt(Timer.now());
         task.setLastUpdate(Timer.now());
+        task.setSystemId(user.getSystemId());
 
         return task_repository.save(task);
     }
@@ -67,9 +76,17 @@ public class TaskService {
         return task_repository.findById(id).orElse(null);
     }
 
+    public Task getTask(Long id, Long system_id) {
+        return task_repository.findByIdAndSystemId(id, system_id).orElse(null);
+    }
+
     public Task duplicate(Long task_id, User user) {
-        Task task = this.getTask(task_id);
+        Task task = this.getTask(task_id, user.getSystemId());
         if (task == null) {
+            throw new IllegalStateException("Invalid task. Please try again");
+        }
+
+        if (system_service.existsById(task.getSystemId())) {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
@@ -89,8 +106,12 @@ public class TaskService {
     }
 
     public Task editTask(Long task_id, TaskDTO dto, User user) {
-        Task task = this.getTask(task_id);
+        Task task = this.getTask(task_id, user.getSystemId());
         if (task == null) {
+            throw new IllegalStateException("Invalid task. Please try again");
+        }
+
+        if (system_service.existsById(task.getSystemId())) {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
@@ -127,9 +148,13 @@ public class TaskService {
         task_repository.deleteById(id);
     }
 
-    public Task start(Long task_id) {
-        Task task = this.getTask(task_id);
+    public Task start(Long task_id, User user) {
+        Task task = this.getTask(task_id, user.getSystemId());
         if (task == null) {
+            throw new IllegalStateException("Invalid task. Please try again");
+        }
+
+        if (system_service.existsById(task.getSystemId())) {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
@@ -141,9 +166,13 @@ public class TaskService {
         return task_repository.save(task);
     }
 
-    public Task requestApproval(Long task_id) {
-        Task task = this.getTask(task_id);
+    public Task requestApproval(Long task_id, User user) {
+        Task task = this.getTask(task_id, user.getSystemId());
         if (task == null) {
+            throw new IllegalStateException("Invalid task. Please try again");
+        }
+
+        if (system_service.existsById(task.getSystemId())) {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
@@ -155,9 +184,13 @@ public class TaskService {
         return task_repository.save(task);
     }
 
-    public Task approve(Long task_id) {
-        Task task = this.getTask(task_id);
+    public Task approve(Long task_id, User user) {
+        Task task = this.getTask(task_id, user.getSystemId());
         if (task == null) {
+            throw new IllegalStateException("Invalid task. Please try again");
+        }
+
+        if (system_service.existsById(task.getSystemId())) {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
@@ -170,9 +203,13 @@ public class TaskService {
         return task_repository.save(task);
     }
 
-    public Task reject(Long task_id) {
-        Task task = this.getTask(task_id);
+    public Task reject(Long task_id, User user) {
+        Task task = this.getTask(task_id, user.getSystemId());
         if (task == null) {
+            throw new IllegalStateException("Invalid task. Please try again");
+        }
+
+        if (system_service.existsById(task.getSystemId())) {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
@@ -185,9 +222,13 @@ public class TaskService {
         return task_repository.save(task);
     }
 
-    public Task complete(Long task_id) {
-        Task task = this.getTask(task_id);
+    public Task complete(Long task_id, User user) {
+        Task task = this.getTask(task_id, user.getSystemId());
         if (task == null) {
+            throw new IllegalStateException("Invalid task. Please try again");
+        }
+
+        if (system_service.existsById(task.getSystemId())) {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
@@ -200,9 +241,13 @@ public class TaskService {
         return task_repository.save(task);
     }
 
-    public Task cancel(Long task_id) {
-        Task task = this.getTask(task_id);
+    public Task cancel(Long task_id, User user) {
+        Task task = this.getTask(task_id, user.getSystemId());
         if (task == null) {
+            throw new IllegalStateException("Invalid task. Please try again");
+        }
+
+        if (system_service.existsById(task.getSystemId())) {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
@@ -211,9 +256,13 @@ public class TaskService {
         return task_repository.save(task);
     }
 
-    public Page<Task> getTaskList(int ipp, int page, String query, Long manager_id, Long participant_id, Long status) {
+    public Page<Task> getTaskList(User user, int ipp, int page, String query, Long manager_id, Long participant_id, Long status) {
         Pageable request = PageRequest.of(page, ipp, Sort.by(Sort.Direction.DESC, "id"));
-        return task_repository.searchTasks(query, manager_id, participant_id, status, request);
+        if (user.getRole() == Role.SUPER_ADMIN) {
+            return task_repository.searchTasks(query, manager_id, participant_id, status, request);
+        }
+
+        return task_repository.searchTasks(query, manager_id, participant_id, status, user.getSystemId(), request);
     }
 
     public Long getCompletedTask(User user) {
@@ -229,6 +278,6 @@ public class TaskService {
     }
 
     public List<Task> getUpcomingTasks(User user) {
-        return task_repository.findUpcomingTasks(user.getId(), Timer.now(), Timer.  endOfDay(Timer.addDuration(Timer.now(), 1, ChronoUnit.DAYS)));
+        return task_repository.findUpcomingTasks(user.getId(), Timer.now(), Timer.  endOfDay(Timer.addDuration(Timer.now(), 1, ChronoUnit.DAYS)), user.getSystemId());
     }
 }

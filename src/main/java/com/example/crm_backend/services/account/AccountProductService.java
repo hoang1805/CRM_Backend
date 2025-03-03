@@ -4,6 +4,7 @@ import com.example.crm_backend.dtos.account.AccountProductDTO;
 import com.example.crm_backend.entities.account.product.AccountProduct;
 import com.example.crm_backend.entities.account.product.AccountProductValidator;
 import com.example.crm_backend.entities.user.User;
+import com.example.crm_backend.enums.Role;
 import com.example.crm_backend.repositories.AccountProductRepository;
 import com.example.crm_backend.repositories.AccountRepository;
 import com.example.crm_backend.utils.ObjectMapper;
@@ -138,13 +139,19 @@ public class AccountProductService {
     }
 
 
-    public Page<AccountProduct> paginate(int ipp, int page, String account_id, String query, Long start, Long end) {
+    public Page<AccountProduct> paginate(User user, int ipp, int page, String account_id, String query, Long start, Long end) {
         Pageable request = PageRequest.of(page, ipp, Sort.by(DESC, "id"));
         if (end != null && end != 0) {
             end = Timer.endOfDay(end);
         }
 
+        if (user.getRole() == Role.SUPER_ADMIN) {
+            return account_product_repository.searchProducts(account_id, query, start, end, request);
+        }
+
+        return account_product_repository.searchProducts(account_id, query, start, end, user.getSystemId(), request);
+
 //        System.out.println(String.format("ipp: %d, page: %d, account_id: %s, query: %s, start: %d, end: %d", ipp, page, account_id, query, start, end));
-        return account_product_repository.searchProducts(account_id, query, start, end, request);
+
     }
 }

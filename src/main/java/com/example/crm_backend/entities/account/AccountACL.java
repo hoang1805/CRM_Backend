@@ -13,6 +13,14 @@ public class AccountACL {
     }
 
     public boolean canView(User user){
+        if (user.getRole() == Role.SUPER_ADMIN) {
+            return true;
+        }
+
+        if (!Objects.equals(account.getSystemId(), user.getSystemId())) {
+            return false;
+        }
+
         Role user_role = user.getRole();
         if (Objects.equals(user_role, Role.ADMIN) || Objects.equals(user_role, Role.MANAGER)) {
             return true;
@@ -23,10 +31,18 @@ public class AccountACL {
     }
 
     public boolean canEdit(User user){
+        if (!Objects.equals(account.getSystemId(), user.getSystemId())) {
+            return false;
+        }
+
         return Objects.equals(this.account.getCreatorId(), user.getId()) || Objects.equals(user.getRole(), Role.ADMIN);
     }
 
     public boolean canDelete(User user){
+        if (!Objects.equals(account.getSystemId(), user.getSystemId())) {
+            return false;
+        }
+
         return Objects.equals(user.getRole(), Role.ADMIN);
     }
 }

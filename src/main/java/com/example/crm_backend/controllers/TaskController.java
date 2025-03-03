@@ -69,7 +69,7 @@ public class TaskController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Invalid account"));
         }
 
-        Page<Task> tasks = task_service.getTaskByAccount(id, ipp, page, query, manager_id, participant_id, status);
+        Page<Task> tasks = task_service.getTaskByAccount(current_user, id, ipp, page, query, manager_id, participant_id, status);
         Page<TaskDTO> data = tasks.map(task -> task.release(current_user));
 
         return ResponseEntity.ok(data);
@@ -81,9 +81,8 @@ public class TaskController {
         if (current_user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
-
-
-        Page<Task> tasks = task_service.getTaskList(ipp, page, query, manager_id, participant_id, status);
+        
+        Page<Task> tasks = task_service.getTaskList(current_user, ipp, page, query, manager_id, participant_id, status);
         Page<TaskDTO> data = tasks.map(task -> task.release(current_user));
 
         return ResponseEntity.ok(facet(data));
@@ -209,7 +208,7 @@ public class TaskController {
         }
 
         try {
-            Task new_task = task_service.start(id);
+            Task new_task = task_service.start(id, current_user);
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -233,7 +232,7 @@ public class TaskController {
         }
 
         try {
-            Task new_task = task_service.requestApproval(id);
+            Task new_task = task_service.requestApproval(id, current_user);
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -257,7 +256,7 @@ public class TaskController {
         }
 
         try {
-            Task new_task = task_service.approve(id);
+            Task new_task = task_service.approve(id, current_user);
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -281,7 +280,7 @@ public class TaskController {
         }
 
         try {
-            Task new_task = task_service.reject(id);
+            Task new_task = task_service.reject(id, current_user);
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -305,7 +304,7 @@ public class TaskController {
         }
 
         try {
-            Task new_task = task_service.complete(id);
+            Task new_task = task_service.complete(id, current_user);
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -329,7 +328,7 @@ public class TaskController {
         }
 
         try {
-            Task new_task = task_service.cancel(id);
+            Task new_task = task_service.cancel(id, current_user);
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));

@@ -11,19 +11,14 @@ import java.util.Map;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class RelationshipDTO {
-
+public class SystemDTO {
     @JsonProperty("id")
     private Long id;
 
     private String name;
 
-    private String color;
-
-    private String description;
-
-    @JsonProperty("creator_id")
-    private Long creatorId;
+    @JsonProperty("max_user")
+    private Long maxUser;
 
     @JsonProperty("created_at")
     private Long createdAt;
@@ -31,22 +26,18 @@ public class RelationshipDTO {
     @JsonProperty("last_update")
     private Long lastUpdate;
 
-    @JsonProperty("system_id")
-    private Long systemId;
-
     private Map<String, Boolean> acl = new HashMap<>();
 
-    public RelationshipDTO() {
-    }
 
-    public RelationshipDTO(Long id, String name, String color, String description, Long creatorId, Long createdAt, Long lastUpdate, Long systemId) {
+    public SystemDTO(Long id, String name, Long maxUser, Long createdAt, Long lastUpdate) {
         this.id = id;
         this.name = name;
-        this.color = color;
-        this.description = description;
-        this.creatorId = creatorId;
+        this.maxUser = maxUser;
         this.createdAt = createdAt;
         this.lastUpdate = lastUpdate;
-        this.systemId = systemId;
+    }
+
+    public SystemDTO() {
+
     }
 }
