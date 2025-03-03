@@ -18,8 +18,8 @@ public class UserConfig {
     @Bean
     CommandLineRunner commandLineRunner(UserRepository user_repository){
         return args -> {
-            User admin = new User("admin", "Admin", "987654654", "admin", Gender.OTHER, 0L,"Admin", Role.SUPER_ADMIN,
-                    "", Encoder.hashPassword("123456"), 0L);
+            User admin = new User("admin", "Super Admin", "", "", Gender.OTHER, 0L,
+                    "Super Admin", Role.SUPER_ADMIN, "", Encoder.hashPassword("123456"), 0L, 0L, 0L, 0L);
             admin.setCreatedAt(Timer.now());
             admin.setLastUpdate(Timer.now());
             if (user_repository.findByUsername(admin.getUsername()).isEmpty()) {

@@ -12,7 +12,11 @@ public class SourceACL {
         this.source = source;
     }
 
-    public boolean canView(User user){
+    public boolean canView(User user) {
+        if (user.getRole() == Role.SUPER_ADMIN) {
+            return true;
+        }
+
         Role user_role = user.getRole();
         boolean ok = user_role == Role.ADMIN || user_role == Role.MANAGER;
 

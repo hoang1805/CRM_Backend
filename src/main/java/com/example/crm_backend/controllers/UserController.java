@@ -75,20 +75,21 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Object> createUser(@RequestBody User user, HttpServletRequest request){
+    public ResponseEntity<Object> createUser(@RequestBody UserDTO dto, HttpServletRequest request){
         User current_user = SessionHelper.getSessionUser(request, user_service);
         if (current_user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
-        if (!Objects.equals(current_user.getRole(), Role.ADMIN)) {
+        if (!Objects.equals(current_user.getRole(), Role.ADMIN) && !Objects.equals(current_user.getRole(), Role.SUPER_ADMIN)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
-            User new_user = user_service.createUser(user, current_user);
+            User new_user = user_service.createUser(dto, current_user);
             return ResponseEntity.ok(Map.of("user", new_user.release(current_user)));
         } catch (Exception e) {
+//            throw e;
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
@@ -200,12 +201,44 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found"));
         }
 
+        if (!(current_user.getRole() == Role.ADMIN) && !(current_user.getRole() == Role.SUPER_ADMIN)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
+        }
+
         if (!user.acl().canEdit(current_user) || Objects.equals(user.getRole(), Role.ADMIN) || Objects.equals(user.getRole(), Role.MANAGER)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         try {
             user = user_service.grantManager(id);
+            return ResponseEntity.ok(Map.of("user", user.release(current_user)));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/grant/admin/{id}")
+    public ResponseEntity<Object> grantAdmin(@PathVariable Long id, HttpServletRequest request) {
+        User current_user = SessionHelper.getSessionUser(request, user_service);
+        if (current_user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
+        }
+
+        User user = user_service.getUserBySystem(id, current_user.getSystemId());
+        if (current_user.getRole() == Role.SUPER_ADMIN) {
+            user = user_service.getUser(id);
+        }
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found"));
+        }
+
+        if (!user.acl().canEdit(current_user) || Objects.equals(user.getRole(), Role.ADMIN) || !Objects.equals(current_user.getRole(), Role.SUPER_ADMIN)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
+        }
+
+        try {
+            user = user_service.grantAdmin(id);
             return ResponseEntity.ok(Map.of("user", user.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -226,6 +259,10 @@ public class UserController {
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found"));
+        }
+
+        if (!(current_user.getRole() == Role.ADMIN) && !(current_user.getRole() == Role.SUPER_ADMIN)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
         if (!user.acl().canEdit(current_user) || Objects.equals(user.getRole(), Role.ADMIN) || Objects.equals(user.getRole(), Role.STAFF)) {

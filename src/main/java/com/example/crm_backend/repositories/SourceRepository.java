@@ -1,6 +1,7 @@
 package com.example.crm_backend.repositories;
 
 import com.example.crm_backend.entities.source.Source;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,4 +25,6 @@ public interface SourceRepository extends JpaRepository<Source, Long> {
     List<Source> searchSources(@Param("query") String query, @Param("system_id") Long system_id);
 
     void deleteBySystemId(Long system_id);
+
+    List<Source> findBySystemId(Long system_id, Sort sort);
 }

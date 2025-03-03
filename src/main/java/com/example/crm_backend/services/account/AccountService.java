@@ -4,6 +4,7 @@ import com.example.crm_backend.dtos.account.AccountDTO;
 import com.example.crm_backend.entities.account.Account;
 import com.example.crm_backend.entities.account.AccountValidator;
 import com.example.crm_backend.entities.user.User;
+import com.example.crm_backend.enums.Role;
 import com.example.crm_backend.repositories.AccountRepository;
 import com.example.crm_backend.repositories.UserRepository;
 import com.example.crm_backend.services.SearchEngine;
@@ -34,28 +35,20 @@ public class AccountService {
         search_engine = searchEngine;
     }
 
-    public List<Account> getAll(){
-        return account_repository.findAll();
-    }
-
-    public Page<Account> paginate(int ipp, int page){
-        Pageable request = PageRequest.of(page, ipp, Sort.by(Sort.Direction.DESC, "id"));
-        return account_repository.findAll(request);
-    }
-
-    public Page<Account> paginate(int ipp, int page, User user){
-        Pageable request = PageRequest.of(page, ipp, Sort.by(Sort.Direction.DESC, "id"));
-        return account_repository.findAllByUser(user.getId(), request);
-    }
-
     public Page<Account> paginate(int ipp, int page, String query, int relationship_id ){
         Pageable request = PageRequest.of(page, ipp, Sort.by(Sort.Direction.DESC, "id"));
 
         return account_repository.searchAccounts(query, (long) relationship_id, request);
     }
 
-    public List<Account> searchAccounts(String query) {
-        return account_repository.searchAccounts(query, 20L);
+    public Page<Account> paginate(int ipp, int page, String query, int relationship_id, Long system_id) {
+        Pageable request = PageRequest.of(page, ipp, Sort.by(Sort.Direction.DESC, "id"));
+
+        return account_repository.searchAccounts(query, (long) relationship_id, system_id, request);
+    }
+
+    public List<Account> searchAccounts(String query, User user) {
+        return account_repository.searchAccounts(query, user.getSystemId(), 20L);
     }
 
     public Account createAccount(AccountDTO data, User creator) {
@@ -67,6 +60,7 @@ public class AccountService {
         account.setCreatorId(creator.getId());
         account.setLastUpdate(Timer.now());
         account.setCreatedAt(Timer.now());
+        account.setSystemId(creator.getSystemId());
 
         return account_repository.save(account);
 //        return account;
@@ -74,15 +68,15 @@ public class AccountService {
 
     public boolean isExist(Account account) {
         String code = account.getCode();
-        return !code.isEmpty() && account_repository.existsByCode(code);
+        Long system_id = account.getSystemId();
+        return !code.isEmpty() && account_repository.existsByCodeAndSystemId(code, system_id);
     }
 
-    public Long count(User user){
-        return account_repository.countByUser(user.getId());
-    }
-
-    public Long count(){
-        return account_repository.count();
+    public Long count(User user) {
+        if (user.getRole() == Role.SUPER_ADMIN) {
+            return account_repository.count();
+        }
+        return account_repository.countBySystemId(user.getSystemId());
     }
 
     public boolean isValidUser(Long user_id) {
@@ -167,6 +161,7 @@ public class AccountService {
                     new_account.setLastUpdate(Timer.now());
                     new_account.setCreatedAt(Timer.now());
                     new_account.setCreatorId(user.getId());
+                    new_account.setSystemId(user.getSystemId());
 
                     accounts.add(new_account);
                 } catch (Exception e) {

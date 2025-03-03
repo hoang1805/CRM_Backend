@@ -40,6 +40,10 @@ public class UserService {
         return user_repository.findAll();
     }
 
+    public List<User> getUsersBySystem(Long system_id) {
+        return user_repository.findBySystemId(system_id);
+    }
+
     public User getUserBySystem(Long id, Long system_id) {
         return user_repository.findByIdAndSystemId(id, system_id).orElse(null);
     }
@@ -66,10 +70,10 @@ public class UserService {
         return user_repository.countBySystemId(system_id);
     }
 
-    public User createUser(User user, User creator) {
-        Long system_id = creator.getCreatorId();
+    public User createUser(UserDTO dto, User creator) {
+        Long system_id = creator.getSystemId();
         if (creator.getRole() == Role.SUPER_ADMIN) {
-            system_id = user.getSystemId();
+            system_id = dto.getSystemId();
         }
 
         System system = system_service.getById(system_id);
@@ -81,8 +85,13 @@ public class UserService {
             throw new RuntimeException("Can't create user after system max user");
         }
 
+        User user = new User();
+        ObjectMapper.mapAll(dto, user);
+
         user.setPassword("123456");
         user.setRole(Role.STAFF);
+        user.setSystemId(system_id);
+
         UserValidator validator = new UserValidator(user, this);
         validator.validate();
 
@@ -90,7 +99,6 @@ public class UserService {
         user.setLastUpdate(Timer.now());
         user.setCreatedAt(Timer.now());
         user.setCreatorId(creator.getId());
-        user.setSystemId(system_id);
         return user_repository.save(user);
     }
 

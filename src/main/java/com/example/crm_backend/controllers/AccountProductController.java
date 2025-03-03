@@ -117,9 +117,18 @@ public class AccountProductController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
+        AccountProduct ap = account_product_service.getById(id);
+        if (ap == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Account product not found"));
+        }
+
+        if (!ap.acl().canEdit(current_user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
+        }
+
         try {
-            AccountProduct ap = account_product_service.duplicate(id, current_user);
-            return ResponseEntity.ok(Map.of("account_product", ap.release(current_user)));
+            AccountProduct nap = account_product_service.duplicate(id, current_user);
+            return ResponseEntity.ok(Map.of("account_product", nap.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
@@ -132,7 +141,7 @@ public class AccountProductController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
-        Page<AccountProduct> aps = account_product_service.paginate(Math.toIntExact(ipp), Math.toIntExact(page), account_id, query, start, end);
+        Page<AccountProduct> aps = account_product_service.paginate(current_user, Math.toIntExact(ipp), Math.toIntExact(page), account_id, query, start, end);
         Page<AccountProductDTO> data = aps.map(ap -> ap.release(current_user));
 
         return ResponseEntity.ok(data);

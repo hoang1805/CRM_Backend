@@ -45,4 +45,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByIdAndSystemId(Long id, Long systemId);
 
     Page<User> findBySystemId(Long systemId, Pageable request);
+
+    List<User> findBySystemId(Long systemId);
 }

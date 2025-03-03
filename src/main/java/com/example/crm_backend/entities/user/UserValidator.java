@@ -58,8 +58,16 @@ public class UserValidator extends Validator {
         return this;
     }
 
+    public UserValidator validSystem() {
+        if(user.getSystemId() == null) {
+            throw new IllegalStateException("System id is null");
+        }
+
+        return this;
+    }
+
     public void validate(){
-        validEmail().validPhone();
+        validSystem().validEmail().validPhone();
 
         if (user.getId() == null && user_service.isExisted(user.getUsername(), user.getEmail())) {
             throw new IllegalStateException("User has already existed");

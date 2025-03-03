@@ -83,11 +83,11 @@ public class System implements Releasable<SystemDTO> {
 
     @Override
     public SystemDTO releaseCompact(User session_user) {
-        return null;
+        return release(session_user);
     }
 
     @Override
     public SystemDTO releaseCompact() {
-        return null;
+        return releaseCompact(null);
     }
 }

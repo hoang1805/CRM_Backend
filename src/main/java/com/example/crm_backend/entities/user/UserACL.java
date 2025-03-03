@@ -12,7 +12,11 @@ public class UserACL {
     }
 
     public boolean canView(User user){
-        return true;
+        if (user.getRole() == Role.SUPER_ADMIN) {
+            return true;
+        }
+
+        return Objects.equals(current_user.getSystemId(), user.getSystemId());
     }
 
     public boolean canEdit(User user){

@@ -20,12 +20,19 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class SourceService {
     private final SourceRepository source_repository;
 
-    public SourceService(SourceRepository source_repository) {
+    private final SystemService system_service;
+
+    public SourceService(SourceRepository source_repository, SystemService systemService) {
         this.source_repository = source_repository;
+        system_service = systemService;
     }
 
     public List<Source> getAll() {
         return source_repository.findAll(Sort.by(DESC, "id"));
+    }
+
+    public List<Source> getAllBySystemId(Long system_id) {
+        return source_repository.findBySystemId(system_id, Sort.by(DESC, "id"));
     }
 
     public boolean isExist(Source source) {
@@ -45,6 +52,10 @@ public class SourceService {
         Source source = new Source();
         ObjectMapper.mapAll(source_DTO, source);
 
+        if (system_service.existsById(creator.getSystemId())) {
+            throw new IllegalStateException("Invalid system id: " + creator.getSystemId());
+        }
+
         try {
             SourceValidator validator = new SourceValidator(source, this);
             source.setSystemId(creator.getSystemId());
@@ -63,6 +74,10 @@ public class SourceService {
         Source source = getSource(source_id);
         if (source == null) {
             throw new IllegalStateException("Invalid source. Please try again");
+        }
+
+        if (system_service.existsById(source.getSystemId())) {
+            throw new IllegalStateException("Invalid system id: " + source.getSystemId());
         }
 
         Source new_source = new Source();

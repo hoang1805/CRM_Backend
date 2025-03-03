@@ -77,10 +77,10 @@ public class AccountController {
         }
 
         Page<Account> accounts = null;
-        if (Objects.equals(current_user.getRole(), Role.ADMIN)) {
+        if (Objects.equals(current_user.getRole(), Role.SUPER_ADMIN)) {
             accounts = account_service.paginate(ipp, page, query, relationship_id);
         } else {
-            accounts = account_service.paginate(ipp, page, query, relationship_id);
+            accounts = account_service.paginate(ipp, page, query, relationship_id, current_user.getSystemId());
 //            accounts = account_service.paginate(ipp, page, query, relationship_id, current_user);
         }
         Page<AccountDTO> data = accounts.map(account -> account.release(current_user));
@@ -183,7 +183,7 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
-        List<Account> accounts = account_service.searchAccounts(query);
+        List<Account> accounts = account_service.searchAccounts(query, current_user);
         return ResponseEntity.ok(accounts.stream().map(Account::releaseCompact).collect(Collectors.toList()));
     }
 

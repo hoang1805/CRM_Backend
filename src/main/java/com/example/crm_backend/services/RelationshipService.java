@@ -21,13 +21,20 @@ public class RelationshipService {
 
     private final RelationshipRepository relationship_repository;
 
+    private final SystemService system_service;
+
     @Autowired
-    public RelationshipService(RelationshipRepository relationship_repository) {
+    public RelationshipService(RelationshipRepository relationship_repository, SystemService systemService) {
         this.relationship_repository = relationship_repository;
+        system_service = systemService;
     }
 
     public List<Relationship> getAll() {
         return relationship_repository.findAll(Sort.by(DESC, "id"));
+    }
+
+    public List<Relationship> getAllBySystemId(Long system_id) {
+        return relationship_repository.findBySystemId(system_id);
     }
 
     public Relationship getRelationship(Long id) {

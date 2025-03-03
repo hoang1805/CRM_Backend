@@ -81,8 +81,7 @@ public class TaskController {
         if (current_user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
-
-
+        
         Page<Task> tasks = task_service.getTaskList(current_user, ipp, page, query, manager_id, participant_id, status);
         Page<TaskDTO> data = tasks.map(task -> task.release(current_user));
 

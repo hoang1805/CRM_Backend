@@ -2,14 +2,11 @@ package com.example.crm_backend.controllers;
 
 import com.example.crm_backend.dtos.SourceDTO;
 import com.example.crm_backend.entities.source.Source;
-import com.example.crm_backend.entities.source.SourceValidator;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.enums.Role;
 import com.example.crm_backend.services.SourceService;
 import com.example.crm_backend.services.UserService;
-import com.example.crm_backend.utils.ObjectMapper;
 import com.example.crm_backend.utils.SessionHelper;
-import com.example.crm_backend.utils.Timer;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,7 +37,11 @@ public class SourceController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
-        return ResponseEntity.ok(source_service.getAll().stream().map(source -> source.release(current_user)).collect(Collectors.toList()));
+        if (current_user.getRole() == Role.SUPER_ADMIN) {
+            return ResponseEntity.ok(source_service.getAll().stream().map(source -> source.release(current_user)).collect(Collectors.toList()));
+        }
+
+        return ResponseEntity.ok(source_service.getAllBySystemId(current_user.getSystemId()).stream().map(source -> source.release(current_user)).collect(Collectors.toList()));
     }
 
     @PostMapping("/create")
@@ -71,6 +72,10 @@ public class SourceController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Invalid source"));
         }
 
+        if (!Objects.equals(current_source.getSystemId(), current_user.getSystemId())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Invalid source"));
+        }
+
         if (!current_source.acl().canEdit(current_user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
@@ -92,6 +97,10 @@ public class SourceController {
 
         Source current_source = source_service.getSource(id);
         if (current_source == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Invalid source"));
+        }
+
+        if (!Objects.equals(current_source.getSystemId(), current_user.getSystemId())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Invalid source"));
         }
 

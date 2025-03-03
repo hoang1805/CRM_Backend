@@ -6,11 +6,15 @@ import com.example.crm_backend.entities.Releasable;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.enums.Gender;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Map;
 
 @Entity
 @Table(name = "accounts")
+@Getter
+@Setter
 public class Account implements Releasable<AccountDTO>, Exportable {
     @Id
     @GeneratedValue(
@@ -29,115 +33,75 @@ public class Account implements Releasable<AccountDTO>, Exportable {
 
     private String email;
 
-    private Long assigned_user_id;
+    @Column(name = "assigned_user_id")
+    private Long assignedUserId;
 
     private Long birthday;
 
     private String job;
 
-    private Long source_id;
+    @Column(name = "source_id")
+    private Long sourceId;
 
-    private Long referrer_id;
+    @Column(name = "referrer_id")
+    private Long referrerId;
 
-    private Long relationship_id;
+    @Column(name = "relationship_id")
+    private Long relationshipId;
 
-    private Long creator_id;
+    @Column(name = "creator_id")
+    private Long creatorId;
 
-    private Long created_at;
+    @Column(name = "created_at")
+    private Long createdAt;
 
-    private Long last_update;
+    @Column(name = "last_update")
+    private Long lastUpdate;
+
+    @Column(name = "system_id")
+    private Long systemId;
 
     @Transient
     private AccountACL acl = null;
 
-    public Account(Long id, String name, String phone, String code, Gender gender, String email, Long assigned_user_id, Long birthday, String job, Long source_id, Long referrer_id, Long relationship_id, Long creator_id, Long created_at, Long last_update) {
-        this.id = id;
-        this.name = name;
-        this.phone = phone;
-        this.code = code;
-        this.gender = gender;
-        this.email = email;
-        this.assigned_user_id = assigned_user_id;
-        this.birthday = birthday;
-        this.job = job;
-        this.source_id = source_id;
-        this.referrer_id = referrer_id;
-        this.relationship_id = relationship_id;
-        this.creator_id = creator_id;
-        this.created_at = created_at;
-        this.last_update = last_update;
-    }
-
-    public Account(String name, String phone, String code, Gender gender, String email, Long assigned_user_id, Long birthday, String job, Long source_id, Long referrer_id, Long relationship_id, Long creator_id, Long created_at, Long last_update) {
-        this.name = name;
-        this.phone = phone;
-        this.code = code;
-        this.gender = gender;
-        this.email = email;
-        this.assigned_user_id = assigned_user_id;
-        this.birthday = birthday;
-        this.job = job;
-        this.source_id = source_id;
-        this.referrer_id = referrer_id;
-        this.relationship_id = relationship_id;
-        this.creator_id = creator_id;
-        this.created_at = created_at;
-        this.last_update = last_update;
-    }
-
     public Account() {
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
+    public Account(Long id, String name, String phone, String code, Gender gender, String email, Long assignedUserId, Long birthday, String job, Long sourceId, Long referrerId, Long relationshipId, Long creatorId, Long createdAt, Long lastUpdate, Long systemId) {
         this.id = id;
-    }
-
-    public Long getReferrerId() {
-        return referrer_id;
-    }
-
-    public void setReferrerId(Long referrer_id) {
-        this.referrer_id = referrer_id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
         this.name = name;
-    }
-
-    public Long getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(Long birthday) {
-        this.birthday = birthday;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
         this.code = code;
+        this.gender = gender;
+        this.email = email;
+        this.assignedUserId = assignedUserId;
+        this.birthday = birthday;
+        this.job = job;
+        this.sourceId = sourceId;
+        this.referrerId = referrerId;
+        this.relationshipId = relationshipId;
+        this.creatorId = creatorId;
+        this.createdAt = createdAt;
+        this.lastUpdate = lastUpdate;
+        this.systemId = systemId;
     }
 
-    public Gender getGender() {
-        return gender;
+    public Account(String name, String phone, String code, Gender gender, String email, Long assignedUserId, Long birthday, String job, Long sourceId, Long referrerId, Long relationshipId, Long creatorId, Long createdAt, Long lastUpdate, Long systemId) {
+        this.name = name;
+        this.phone = phone;
+        this.code = code;
+        this.gender = gender;
+        this.email = email;
+        this.assignedUserId = assignedUserId;
+        this.birthday = birthday;
+        this.job = job;
+        this.sourceId = sourceId;
+        this.referrerId = referrerId;
+        this.relationshipId = relationshipId;
+        this.creatorId = creatorId;
+        this.createdAt = createdAt;
+        this.lastUpdate = lastUpdate;
+        this.systemId = systemId;
     }
 
     public void setGender(Gender gender) {
@@ -148,69 +112,7 @@ public class Account implements Releasable<AccountDTO>, Exportable {
         this.gender = gender;
     }
 
-    public String getEmail() {
-        return email;
-    }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Long getAssignedUserId() {
-        return assigned_user_id;
-    }
-
-    public void setAssignedUserId(Long assigned_user_id) {
-        this.assigned_user_id = assigned_user_id;
-    }
-
-    public String getJob() {
-        return job;
-    }
-
-    public void setJob(String job) {
-        this.job = job;
-    }
-
-    public Long getSourceId() {
-        return source_id;
-    }
-
-    public void setSourceId(Long source_id) {
-        this.source_id = source_id;
-    }
-
-    public Long getRelationshipId() {
-        return relationship_id;
-    }
-
-    public void setRelationshipId(Long relationship_id) {
-        this.relationship_id = relationship_id;
-    }
-
-    public Long getCreatorId() {
-        return creator_id;
-    }
-
-    public void setCreatorId(Long creator_id) {
-        this.creator_id = creator_id;
-    }
-
-    public Long getCreatedAt() {
-        return created_at;
-    }
-
-    public void setCreatedAt(Long created_at) {
-        this.created_at = created_at;
-    }
-
-    public Long getLastUpdate() {
-        return last_update;
-    }
-
-    public void setLastUpdate(Long last_update) {
-        this.last_update = last_update;
-    }
 
     public AccountACL acl() {
         if (this.acl == null) {
@@ -229,7 +131,7 @@ public class Account implements Releasable<AccountDTO>, Exportable {
     public AccountDTO releaseCompact(User session_user) {
         AccountDTO account_DTO = new AccountDTO();
         account_DTO.setId(id).setName(name).setGender(gender != null ? gender : Gender.OTHER).setBirthday(birthday)
-                .setPhone(phone).setEmail(email).setCode(code).setAssignedUserId(assigned_user_id).setJob(job);
+                .setPhone(phone).setEmail(email).setCode(code).setAssignedUserId(assignedUserId).setJob(job);
         if (session_user != null) {
             account_DTO.setACL(Map.of(
                     "view", this.acl().canView(session_user),
@@ -250,9 +152,9 @@ public class Account implements Releasable<AccountDTO>, Exportable {
     public AccountDTO release(User session_user) {
         AccountDTO account_DTO = new AccountDTO();
         account_DTO.setId(id).setName(name).setGender(gender != null ? gender : Gender.OTHER).setBirthday(birthday)
-                .setPhone(phone).setEmail(email).setCode(code).setAssignedUserId(assigned_user_id).setJob(job)
-                .setSourceId(source_id).setRelationshipId(relationship_id).setReferrerId(referrer_id)
-                .setCreatorId(creator_id).setCreatedAt(created_at).setLastUpdate(last_update);
+                .setPhone(phone).setEmail(email).setCode(code).setAssignedUserId(assignedUserId).setJob(job)
+                .setSourceId(sourceId).setRelationshipId(relationshipId).setReferrerId(referrerId)
+                .setCreatorId(creatorId).setCreatedAt(createdAt).setLastUpdate(lastUpdate);
         if (session_user != null) {
             account_DTO.setACL(Map.of(
                     "view", this.acl().canView(session_user),
