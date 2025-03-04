@@ -3,6 +3,7 @@ package com.example.crm_backend.services;
 import com.example.crm_backend.configurations.SecurityConfig;
 import com.example.crm_backend.dtos.FeedbackDTO;
 import com.example.crm_backend.entities.access_token.AccessToken;
+import com.example.crm_backend.entities.account.Account;
 import com.example.crm_backend.entities.feedback.Feedback;
 import com.example.crm_backend.entities.feedback.FeedbackValidator;
 import com.example.crm_backend.repositories.AccountRepository;
@@ -42,13 +43,15 @@ public class FeedbackService {
     public Feedback create(AccessToken accessToken, FeedbackDTO dto) {
         Feedback feedback = new Feedback();
         Long account_id = accessToken.getObjectId();
-        if (!account_repository.existsById(account_id)) {
-            throw new IllegalArgumentException("Account not found");
+        Account account = account_repository.findById(account_id).orElse(null);
+        if (account == null) {
+            throw new IllegalArgumentException("Invalid account");
         }
 
         ObjectMapper.mapAll(dto, feedback);
         feedback.setObjectId(account_id);
         feedback.setObjectType(accessToken.getObjectType());
+        feedback.setSystemId(account.getSystemId());
 
         try {
             FeedbackValidator validator = new FeedbackValidator(feedback, this);
