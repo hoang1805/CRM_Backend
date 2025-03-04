@@ -121,4 +121,7 @@ TaskRepository extends JpaRepository<Task, Long> {
     void deleteBySystemId(Long system_id);
 
     Optional<Task> findByIdAndSystemId(Long id, Long system_id);
+
+    @Query("SELECT t FROM Task t WHERE t.endDate < :now AND t.expired = false AND t.status NOT IN (10, 33) AND t.status < 40")
+    List<Task> findExpiredTasks(@Param("now") Long now);
 }

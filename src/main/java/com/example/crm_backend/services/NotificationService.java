@@ -3,8 +3,10 @@ package com.example.crm_backend.services;
 import aj.org.objectweb.asm.commons.Remapper;
 import com.example.crm_backend.dtos.NotificationDTO;
 import com.example.crm_backend.entities.notification.Notification;
+import com.example.crm_backend.entities.remind.Remind;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.repositories.NotificationRepository;
+import com.example.crm_backend.services.cronjob.Reminder;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -90,6 +92,32 @@ public class NotificationService {
 
     private List<Long> unique(List<Long> ids) {
         return ids.stream().distinct().collect(Collectors.toList());
+    }
+
+    public void notify(Remind remind) {
+        List<Notification> notifications = new ArrayList<>();
+
+        for (Long id : unique(remind.getUserIds())) {
+            User target_user = user_service.getUser(id);
+            if (target_user == null) {
+                continue;
+            }
+
+            if (!Objects.equals(target_user.getSystemId(), remind.getSystemId())) {
+                continue;
+            }
+
+            Notification notification = new Notification("Remind", id, 0L, remind.getMessage(), remind.getAdditional(), remind.getUrl(), remind.getSystemId());
+            notifications.add(notification);
+        }
+
+        if (!notifications.isEmpty()) {
+            notification_repository.saveAll(notifications);
+        }
+
+        for (Notification notification : notifications) {
+            sendToUser(notification);
+        }
     }
 
     public void notify(User user, String title, List<Long> target_ids, String message, String object_name) {

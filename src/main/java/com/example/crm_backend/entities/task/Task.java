@@ -3,11 +3,15 @@ package com.example.crm_backend.entities.task;
 import com.example.crm_backend.dtos.TaskDTO;
 import com.example.crm_backend.entities.HasLink;
 import com.example.crm_backend.entities.Releasable;
+import com.example.crm_backend.entities.remind.Remind;
 import com.example.crm_backend.entities.user.User;
+import com.example.crm_backend.enums.Process;
+import com.example.crm_backend.utils.converter.MapConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -37,6 +41,9 @@ public class Task implements Releasable<TaskDTO>, HasLink {
     @Transient
     public static final int CANCELED = 50;
 
+    @Transient
+    public static final int FAILED = 60;
+
     @Id
     @GeneratedValue(
             strategy = GenerationType.IDENTITY
@@ -48,6 +55,14 @@ public class Task implements Releasable<TaskDTO>, HasLink {
     private String description;
 
     private String note;
+
+    @Enumerated(EnumType.STRING)
+    private Process process;
+
+    private boolean expired;
+
+    @Convert(converter = MapConverter.class)
+    private Map<String, String> data;
 
     private String project;
 
@@ -88,29 +103,14 @@ public class Task implements Releasable<TaskDTO>, HasLink {
     public Task() {
     }
 
-    public Task(Long id, String name, String description, String note, String project, String attachment, Long startDate, Long endDate, Long status, Long managerId, Long participantId, Long accountId, Long creatorId, Long createdAt, Long lastUpdate, Long systemId) {
+    public Task(Long id, String name, String description, String note, Process process, boolean expired, Map<String, String> data, String project, String attachment, Long startDate, Long endDate, Long status, Long managerId, Long participantId, Long accountId, Long creatorId, Long createdAt, Long lastUpdate, Long systemId) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.note = note;
-        this.project = project;
-        this.attachment = attachment;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.status = status;
-        this.managerId = managerId;
-        this.participantId = participantId;
-        this.accountId = accountId;
-        this.creatorId = creatorId;
-        this.createdAt = createdAt;
-        this.lastUpdate = lastUpdate;
-        this.systemId = systemId;
-    }
-
-    public Task(String name, String description, String note, String project, String attachment, Long startDate, Long endDate, Long status, Long managerId, Long participantId, Long accountId, Long creatorId, Long createdAt, Long lastUpdate, Long systemId) {
-        this.name = name;
-        this.description = description;
-        this.note = note;
+        this.process = process;
+        this.expired = expired;
+        this.data = data;
         this.project = project;
         this.attachment = attachment;
         this.startDate = startDate;
@@ -130,6 +130,56 @@ public class Task implements Releasable<TaskDTO>, HasLink {
             this.acl = new TaskACL(this);
         }
         return this.acl;
+    }
+
+    public List<Long> collectUsers() {
+        return List.of(creatorId, managerId, participantId);
+    }
+
+    public void enableRemind() {
+        data.put("enable_remind", String.valueOf(true));
+    }
+
+    public void disableRemind() {
+        data.put("disable_remind", String.valueOf(false));
+    }
+
+    public void setDuration(Long duration) {
+        if (duration == null) {
+            duration = 0L;
+        }
+        data.put("duration", String.valueOf(duration));
+    }
+
+    public Long getDuration() {
+        String value = String.valueOf(data.get("duration"));
+        if (value == null || value.isEmpty()) {
+            return 0L;
+        }
+
+        return Long.parseLong(value);
+    }
+
+    public void addRemind(Remind remind) {
+        data.put("remind_id", String.valueOf(remind.getId()));
+    }
+
+    public Long getRemind() {
+        String value = String.valueOf(data.get("remind_id"));
+        if (value == null || value.isEmpty()) {
+            return null;
+        }
+
+        return Long.parseLong(value);
+    }
+
+    public void removeRemind() {
+        data.remove("remind_id");
+    }
+
+    public boolean isRemind() {
+        String value = String.valueOf(data.get("enable_remind"));
+        return Boolean.parseBoolean(value);
     }
 
     @Override
