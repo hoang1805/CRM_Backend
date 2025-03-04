@@ -203,6 +203,33 @@ public class NotificationService {
         }
     }
 
+    public void notifyAll(User user, List<Long> except_ids, String message, Map<String, String> additional, String url, Long system_id) {
+        if (system_id == null) {
+            return;
+        }
+
+        List<Long> user_ids = user_service.getUsersBySystem(system_id).stream().map(User::getId).toList();
+        except_ids.add(user.getId());
+
+        user_ids = except(user_ids, except_ids);
+
+        List<Notification> notifications = new ArrayList<>();
+
+        for (Long target_id : user_ids) {
+            User target_user = user_service.getUser(target_id);
+            if (target_user == null) {
+                continue;
+            }
+
+            if (!Objects.equals(target_user.getSystemId(), system_id)) {
+                continue;
+            }
+
+            Notification notification = new Notification(target_id, 0L, message, additional, url, system_id);
+            notifications.add(notification);
+        }
+    }
+
     public void systemNotify(List<Long> target_ids, String message, String object_name, String url, Long system_id) {
         if (system_id == null) {
             return;
@@ -235,5 +262,10 @@ public class NotificationService {
     public Page<Notification> paginate(int ipp, int page, User user) {
         Pageable request = PageRequest.of(page, ipp, Sort.by(Sort.Direction.DESC, "id"));
         return notification_repository.findByTargetIdAndSystemId(user.getId(), user.getSystemId(), request);
+    }
+
+
+    private List<Long> except(List<Long> ids, List<Long> except_ids) {
+        return ids.stream().filter(id -> !except_ids.contains(id)).collect(Collectors.toList());
     }
 }
