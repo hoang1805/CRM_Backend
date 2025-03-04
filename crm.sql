@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 03, 2025 at 10:57 AM
+-- Generation Time: Mar 04, 2025 at 02:58 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -113,6 +113,28 @@ CREATE TABLE IF NOT EXISTS `feedbacks` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `notifications`
+--
+
+CREATE TABLE IF NOT EXISTS `notifications` (
+                                               `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `additional` text DEFAULT NULL,
+    `created_at` bigint(20) DEFAULT NULL,
+    `is_read` bit(1) DEFAULT NULL,
+    `last_update` bigint(20) DEFAULT NULL,
+    `message` text DEFAULT NULL,
+    `source_id` bigint(20) DEFAULT NULL,
+    `system_id` bigint(20) DEFAULT NULL,
+    `target_id` bigint(20) DEFAULT NULL,
+    `url` varchar(255) DEFAULT NULL,
+    `title` varchar(255) DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    KEY `system_id` (`system_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `relationships`
 --
 
@@ -124,7 +146,6 @@ CREATE TABLE IF NOT EXISTS `relationships` (
     `description` varchar(255) DEFAULT NULL,
     `last_update` bigint(20) DEFAULT NULL,
     `name` varchar(255) DEFAULT NULL,
-    `create_at` bigint(20) DEFAULT NULL,
     `system_id` bigint(20) DEFAULT NULL,
     PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
