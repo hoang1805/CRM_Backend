@@ -111,7 +111,7 @@ public class TaskController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
-        if (current_user.getRole() != Role.ADMIN && current_user.getRole() != Role.MANAGER) {
+        if (current_user.getRole() != Role.ADMIN && current_user.getRole() != Role.MANAGER && current_user.getRole() != Role.STAFF) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
