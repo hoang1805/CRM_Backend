@@ -117,7 +117,7 @@ public class TaskController {
 
         try {
             Task task = task_service.createTask(task_DTO, current_user);
-            notification_service.notify(current_user, "Task", List.of(task.getCreatorId(), task.getManagerId(), task.getParticipantId()), "${user} created a new Task {object_name}", task.getName());
+            notification_service.notify(current_user, "Task", List.of(task.getCreatorId(), task.getManagerId(), task.getParticipantId()), "${user} created a new Task ${object_name}", task.getName());
             return ResponseEntity.ok(Map.of("task", task.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -142,7 +142,7 @@ public class TaskController {
 
         try {
             Task new_task = task_service.editTask(id, task_DTO, current_user);
-            notification_service.notify(current_user, "Task", List.of(task.getCreatorId(), task.getManagerId(), task.getParticipantId()), "${user} edited a Task {object_name} that you followed", task.getName());
+            notification_service.notify(current_user, "Task", List.of(task.getCreatorId(), task.getManagerId(), task.getParticipantId()), "${user} edited a Task ${object_name} that you followed", task.getName());
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -167,7 +167,7 @@ public class TaskController {
 
         try {
             task_service.deleteTask(id);
-            notification_service.notify(current_user, "Task", List.of(task.getCreatorId(), task.getManagerId(), task.getParticipantId()), "${user} deleted a Task {object_name} that you followed", task.getName());
+            notification_service.notify(current_user, "Task", List.of(task.getCreatorId(), task.getManagerId(), task.getParticipantId()), "${user} deleted a Task ${object_name} that you followed", task.getName());
             return ResponseEntity.ok(Map.of("message", "Delete successfully"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -192,7 +192,7 @@ public class TaskController {
 
         try {
             Task new_task = task_service.duplicate(id, current_user);
-            notification_service.notify(current_user, "Task", List.of(new_task.getCreatorId(), new_task.getManagerId(), new_task.getParticipantId()), "${user} duplicated a Task {object_name} that you followed", new_task.getName());
+            notification_service.notify(current_user, "Task", List.of(new_task.getCreatorId(), new_task.getManagerId(), new_task.getParticipantId()), "${user} duplicated a Task ${object_name} that you followed", new_task.getName());
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -217,7 +217,7 @@ public class TaskController {
 
         try {
             Task new_task = task_service.start(id, current_user);
-            notification_service.notify(current_user, "Task", List.of(new_task.getCreatorId(), new_task.getManagerId(), new_task.getParticipantId()), "${user} started a Task {object_name} that you followed", new_task.getName());
+            notification_service.notify(current_user, "Task", List.of(new_task.getCreatorId(), new_task.getManagerId(), new_task.getParticipantId()), "${user} started a Task ${object_name} that you followed", new_task.getName());
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -242,7 +242,7 @@ public class TaskController {
 
         try {
             Task new_task = task_service.requestApproval(id, current_user);
-            notification_service.notify(current_user, "Task", List.of(new_task.getCreatorId(), new_task.getManagerId(), new_task.getParticipantId()), "${user} requested approval a Task {object_name} that you followed", new_task.getName());
+            notification_service.notify(current_user, "Task", List.of(new_task.getCreatorId(), new_task.getManagerId(), new_task.getParticipantId()), "${user} requested approval a Task ${object_name} that you followed", new_task.getName());
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -267,7 +267,7 @@ public class TaskController {
 
         try {
             Task new_task = task_service.approve(id, current_user);
-            notification_service.notify(current_user, "Task", List.of(new_task.getCreatorId(), new_task.getManagerId(), new_task.getParticipantId()), "${user} approved a Task {object_name} that you followed", new_task.getName());
+            notification_service.notify(current_user, "Task", List.of(new_task.getCreatorId(), new_task.getManagerId(), new_task.getParticipantId()), "${user} approved a Task ${object_name} that you followed", new_task.getName());
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -292,7 +292,7 @@ public class TaskController {
 
         try {
             Task new_task = task_service.reject(id, current_user);
-            notification_service.notify(current_user, "Task", List.of(new_task.getCreatorId(), new_task.getManagerId(), new_task.getParticipantId()), "${user} rejected a Task {object_name} that you followed", new_task.getName());
+            notification_service.notify(current_user, "Task", List.of(new_task.getCreatorId(), new_task.getManagerId(), new_task.getParticipantId()), "${user} rejected a Task ${object_name} that you followed", new_task.getName());
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -317,7 +317,7 @@ public class TaskController {
 
         try {
             Task new_task = task_service.complete(id, current_user);
-            notification_service.notify(current_user, "Task", List.of(new_task.getCreatorId(), new_task.getManagerId(), new_task.getParticipantId()), "${user} completed a Task {object_name} that you followed", new_task.getName());
+            notification_service.notify(current_user, "Task", List.of(new_task.getCreatorId(), new_task.getManagerId(), new_task.getParticipantId()), "${user} completed a Task ${object_name} that you followed", new_task.getName());
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -342,7 +342,7 @@ public class TaskController {
 
         try {
             Task new_task = task_service.cancel(id, current_user);
-            notification_service.notify(current_user, "Task", List.of(new_task.getCreatorId(), new_task.getManagerId(), new_task.getParticipantId()), "${user} canceled a Task {object_name} that you followed", new_task.getName());
+            notification_service.notify(current_user, "Task", List.of(new_task.getCreatorId(), new_task.getManagerId(), new_task.getParticipantId()), "${user} canceled a Task ${object_name} that you followed", new_task.getName());
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
