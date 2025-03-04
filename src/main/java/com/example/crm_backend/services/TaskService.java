@@ -86,7 +86,7 @@ public class TaskService {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
-        if (system_service.existsById(task.getSystemId())) {
+        if (!system_service.existsById(task.getSystemId())) {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
@@ -111,7 +111,7 @@ public class TaskService {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
-        if (system_service.existsById(task.getSystemId())) {
+        if (!system_service.existsById(task.getSystemId())) {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
@@ -154,7 +154,7 @@ public class TaskService {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
-        if (system_service.existsById(task.getSystemId())) {
+        if (!system_service.existsById(task.getSystemId())) {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
@@ -172,7 +172,7 @@ public class TaskService {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
-        if (system_service.existsById(task.getSystemId())) {
+        if (!system_service.existsById(task.getSystemId())) {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
@@ -190,7 +190,7 @@ public class TaskService {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
-        if (system_service.existsById(task.getSystemId())) {
+        if (!system_service.existsById(task.getSystemId())) {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
@@ -209,7 +209,7 @@ public class TaskService {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
-        if (system_service.existsById(task.getSystemId())) {
+        if (!system_service.existsById(task.getSystemId())) {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
@@ -228,7 +228,7 @@ public class TaskService {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
-        if (system_service.existsById(task.getSystemId())) {
+        if (!system_service.existsById(task.getSystemId())) {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
@@ -247,7 +247,7 @@ public class TaskService {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
-        if (system_service.existsById(task.getSystemId())) {
+        if (!system_service.existsById(task.getSystemId())) {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
