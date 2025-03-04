@@ -41,6 +41,7 @@ public class AccountProductService {
     public AccountProduct create(AccountProductDTO dto, User user) {
         AccountProduct ap = new AccountProduct();
         ObjectMapper.mapAll(dto, ap);
+        ap.setSystemId(user.getSystemId());
 
         //refine data
         if (ap.getDiscount() == null) {
