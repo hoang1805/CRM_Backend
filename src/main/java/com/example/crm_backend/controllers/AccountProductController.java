@@ -66,6 +66,9 @@ public class AccountProductController {
 
         try {
             AccountProduct ap = account_product_service.create(dto, current_user);
+            Account account = account_service.getAccount(ap.getAccountId());
+            notification_service.notify(current_user, "Product", List.of(ap.getCreatorId(), account.getCreatorId(), account.getAssignedUserId(), account.getReferrerId()), "${user} created Product ${object_name} that you followed", ap.getName(), ap.getLink());
+
             return ResponseEntity.ok(Map.of("account_product", ap.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -91,7 +94,7 @@ public class AccountProductController {
         try {
             AccountProduct edited_ap = account_product_service.edit(id, dto);
             Account account = account_service.getAccount(edited_ap.getAccountId());
-            notification_service.notify(current_user, List.of(edited_ap.getCreatorId(), account.getCreatorId(), account.getAssignedUserId(), account.getReferrerId()), "${user} edited Product ${object_name} that you followed", edited_ap.getName(), edited_ap.getLink());
+            notification_service.notify(current_user, "Product", List.of(edited_ap.getCreatorId(), account.getCreatorId(), account.getAssignedUserId(), account.getReferrerId()), "${user} edited Product ${object_name} that you followed", edited_ap.getName(), edited_ap.getLink());
             return ResponseEntity.ok(Map.of("account_product", edited_ap.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -117,7 +120,7 @@ public class AccountProductController {
         try {
             account_product_service.delete(id);
             Account account = account_service.getAccount(ap.getAccountId());
-            notification_service.notify(current_user, List.of(ap.getCreatorId(), account.getCreatorId(), account.getAssignedUserId(), account.getReferrerId()), "${user} deleted Product ${object_name} that you followed", ap.getName());
+            notification_service.notify(current_user, "Product", List.of(ap.getCreatorId(), account.getCreatorId(), account.getAssignedUserId(), account.getReferrerId()), "${user} deleted Product ${object_name} that you followed", ap.getName());
 
             return ResponseEntity.ok(Map.of("message", "Delete successfully"));
         } catch (Exception e) {

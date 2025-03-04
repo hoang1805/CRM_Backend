@@ -52,7 +52,7 @@ public class SourceService {
         Source source = new Source();
         ObjectMapper.mapAll(source_DTO, source);
 
-        if (system_service.existsById(creator.getSystemId())) {
+        if (!system_service.existsById(creator.getSystemId())) {
             throw new IllegalStateException("Invalid system id: " + creator.getSystemId());
         }
 
@@ -76,7 +76,7 @@ public class SourceService {
             throw new IllegalStateException("Invalid source. Please try again");
         }
 
-        if (system_service.existsById(source.getSystemId())) {
+        if (!system_service.existsById(source.getSystemId())) {
             throw new IllegalStateException("Invalid system id: " + source.getSystemId());
         }
 

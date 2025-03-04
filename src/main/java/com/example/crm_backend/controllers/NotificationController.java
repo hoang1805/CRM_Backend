@@ -9,10 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -37,5 +34,45 @@ public class NotificationController {
         }
 
         return ResponseEntity.ok(notification_service.paginate(ipp, page, current_user).map(Notification::release));
+    }
+
+    @GetMapping("/count/unread")
+    public ResponseEntity<Object> countUnread(HttpServletRequest request) {
+        User current_user = SessionHelper.getSessionUser(request, user_service);
+        if (current_user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
+        }
+
+        return ResponseEntity.ok(Map.of("count", notification_service.countByUser(current_user)));
+    }
+
+    @PostMapping("/mark.read/{id}")
+    public ResponseEntity<Object> markRead(@PathVariable("id") Long id, HttpServletRequest request) {
+        User current_user = SessionHelper.getSessionUser(request, user_service);
+        if (current_user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
+        }
+
+        try {
+            Notification notification = notification_service.markAsRead(current_user, id);
+            return ResponseEntity.ok(Map.of("notification", notification.release()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/mark.all")
+    public ResponseEntity<Object> markAllRead(HttpServletRequest request) {
+        User current_user = SessionHelper.getSessionUser(request, user_service);
+        if (current_user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
+        }
+
+        try {
+            notification_service.markAllAsRead(current_user);
+            return ResponseEntity.ok(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
+        }
     }
 }

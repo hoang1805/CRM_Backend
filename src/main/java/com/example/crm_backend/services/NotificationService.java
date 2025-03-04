@@ -40,7 +40,16 @@ public class NotificationService {
         return notification_repository.findByTargetIdAndSystemId(user.getId(), user.getSystemId());
     }
 
-    public void markAsRead(User user, Long notification_id) {
+    public long countByUser(User user) {
+//        System.out.println("User ID: " + user.getId());
+//        System.out.println("System ID: " + user.getSystemId());
+//        System.out.println("Query Result: " +
+//                notification_repository.countByTargetIdAndSystemIdAndIsRead(user.getId(), user.getSystemId(), false));
+
+        return notification_repository.countByTargetIdAndSystemIdAndIsRead(user.getId(), user.getSystemId(), false);
+    }
+
+    public Notification markAsRead(User user, Long notification_id) {
         Notification notification = notification_repository.findById(notification_id).orElse(null);
         if (notification == null) {
             throw new IllegalStateException("Notification not found");
@@ -50,8 +59,12 @@ public class NotificationService {
             throw new IllegalStateException("Notification not found");
         }
 
+        if (!Objects.equals(notification.getTargetId(), user.getId())) {
+            throw new IllegalStateException("Notification not found");
+        }
+
         notification.setRead(true);
-        notification_repository.save(notification);
+        return notification_repository.save(notification);
     }
 
     @Transactional
@@ -79,7 +92,7 @@ public class NotificationService {
         return ids.stream().distinct().collect(Collectors.toList());
     }
 
-    public void notify(User user, List<Long> target_ids, String message, String object_name) {
+    public void notify(User user, String title, List<Long> target_ids, String message, String object_name) {
         List<Notification> notifications = new ArrayList<>();
         for (Long target_id : unique(target_ids)) {
             User target_user = user_service.getUser(target_id);
@@ -95,7 +108,7 @@ public class NotificationService {
                 continue;
             }
 
-            Notification notification = new Notification(target_id, user.getId(), message, Map.of("object_name", object_name), user.getSystemId());
+            Notification notification = new Notification(title, target_id, user.getId(), message, Map.of("object_name", object_name), user.getSystemId());
             notifications.add(notification);
         }
 
@@ -108,7 +121,7 @@ public class NotificationService {
         }
     }
 
-    public void notify(User user, List<Long> target_ids, String message, String object_name, Long system_id) {
+    public void notify(User user, String title, List<Long> target_ids, String message, String object_name, Long system_id) {
         if (system_id == null) {
             return;
         }
@@ -128,7 +141,7 @@ public class NotificationService {
                 continue;
             }
 
-            Notification notification = new Notification(target_id, user.getId(), message, Map.of("object_name", object_name), system_id);
+            Notification notification = new Notification(title, target_id, user.getId(), message, Map.of("object_name", object_name), system_id);
             notifications.add(notification);
         }
 
@@ -141,7 +154,7 @@ public class NotificationService {
         }
     }
 
-    public void notify(User user, List<Long> target_ids, String message, String object_name, String url) {
+    public void notify(User user, String title, List<Long> target_ids, String message, String object_name, String url) {
         List<Notification> notifications = new ArrayList<>();
         for (Long target_id : unique(target_ids)) {
             User target_user = user_service.getUser(target_id);
@@ -157,7 +170,7 @@ public class NotificationService {
                 continue;
             }
 
-            Notification notification = new Notification(target_id, user.getId(), message, Map.of("object_name", object_name), url, user.getSystemId());
+            Notification notification = new Notification(title, target_id, user.getId(), message, Map.of("object_name", object_name), url, user.getSystemId());
             notifications.add(notification);
         }
 
@@ -170,7 +183,7 @@ public class NotificationService {
         }
     }
 
-    public void notify(User user, List<Long> target_ids, String message, String object_name, String url, Long system_id) {
+    public void notify(User user, String title, List<Long> target_ids, String message, String object_name, String url, Long system_id) {
         if (system_id == null) {
             return;
         }
@@ -190,7 +203,7 @@ public class NotificationService {
                 continue;
             }
 
-            Notification notification = new Notification(target_id, user.getId(), message, Map.of("object_name", object_name), url, system_id);
+            Notification notification = new Notification(title, target_id, user.getId(), message, Map.of("object_name", object_name), url, system_id);
             notifications.add(notification);
         }
 
@@ -203,7 +216,7 @@ public class NotificationService {
         }
     }
 
-    public void notifyAll(User user, List<Long> except_ids, String message, Map<String, String> additional, String url, Long system_id) {
+    public void notifyAll(User user, String title, List<Long> except_ids, String message, Map<String, String> additional, String url, Long system_id) {
         if (system_id == null) {
             return;
         }
@@ -225,12 +238,20 @@ public class NotificationService {
                 continue;
             }
 
-            Notification notification = new Notification(target_id, 0L, message, additional, url, system_id);
+            Notification notification = new Notification(title, target_id, user.getId(), message, additional, url, system_id);
             notifications.add(notification);
+        }
+
+        if (!notifications.isEmpty()) {
+            notification_repository.saveAll(notifications);
+        }
+
+        for (Notification notification : notifications) {
+            sendToUser(notification);
         }
     }
 
-    public void systemNotify(List<Long> target_ids, String message, String object_name, String url, Long system_id) {
+    public void systemNotify(String title, List<Long> target_ids, String message, String object_name, String url, Long system_id) {
         if (system_id == null) {
             return;
         }
@@ -246,7 +267,7 @@ public class NotificationService {
                 continue;
             }
 
-            Notification notification = new Notification(target_id, 0L, message, Map.of("object_name", object_name), url, system_id);
+            Notification notification = new Notification(title, target_id, 0L, message, Map.of("object_name", object_name), url, system_id);
             notifications.add(notification);
         }
 
@@ -261,9 +282,8 @@ public class NotificationService {
 
     public Page<Notification> paginate(int ipp, int page, User user) {
         Pageable request = PageRequest.of(page, ipp, Sort.by(Sort.Direction.DESC, "id"));
-        return notification_repository.findByTargetIdAndSystemId(user.getId(), user.getSystemId(), request);
+        return notification_repository.getNotifications(user.getId(), user.getSystemId(), request);
     }
-
 
     private List<Long> except(List<Long> ids, List<Long> except_ids) {
         return ids.stream().filter(id -> !except_ids.contains(id)).collect(Collectors.toList());

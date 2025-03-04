@@ -125,7 +125,7 @@ public class AccountController {
 
         try {
             Account edited = account_service.edit(id, account_DTO);
-            notification_service.notify(current_user, List.of(edited.getCreatorId(), edited.getAssignedUserId(), edited.getReferrerId()), "${user} edited Account ${object_name} that you followed", edited.getName(), edited.getLink());
+            notification_service.notify(current_user, "Account", List.of(edited.getCreatorId(), edited.getAssignedUserId(), edited.getReferrerId()), "${user} edited Account ${object_name} that you followed", edited.getName(), edited.getLink());
 
             return ResponseEntity.ok(Map.of("account", edited.release(current_user)));
         } catch (Exception e) {
@@ -151,7 +151,7 @@ public class AccountController {
 
         try {
             account_service.deleteAccount(id);
-            notification_service.notify(current_user, List.of(account.getCreatorId(), account.getAssignedUserId(), account.getReferrerId()), "${user} Account deleted ${object_name} that you followed", account.getName());
+            notification_service.notify(current_user, "Account", List.of(account.getCreatorId(), account.getAssignedUserId(), account.getReferrerId()), "${user} Account deleted ${object_name} that you followed", account.getName());
             return ResponseEntity.ok("Xóa thành công!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

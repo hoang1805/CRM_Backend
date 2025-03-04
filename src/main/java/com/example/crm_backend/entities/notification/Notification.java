@@ -24,6 +24,8 @@ public class Notification implements Releasable<NotificationDTO> {
     )
     private Long id;
 
+    private String title;
+
     @Column(name = "target_id")
     private Long targetId;
 
@@ -52,8 +54,9 @@ public class Notification implements Releasable<NotificationDTO> {
     public Notification() {
     }
 
-    public Notification(Long id, Long targetId, Long sourceId, String message, boolean isRead, Map<String, String> additional, String url, Long createdAt, Long lastUpdate, Long systemId) {
+    public Notification(Long id, String title, Long targetId, Long sourceId, String message, boolean isRead, Map<String, String> additional, String url, Long createdAt, Long lastUpdate, Long systemId) {
         this.id = id;
+        this.title = title;
         this.targetId = targetId;
         this.sourceId = sourceId;
         this.message = message;
@@ -65,7 +68,8 @@ public class Notification implements Releasable<NotificationDTO> {
         this.systemId = systemId;
     }
 
-    public Notification(Long targetId, Long sourceId, String message, Long systemId) {
+    public Notification(String title, Long targetId, Long sourceId, String message, Long systemId) {
+        this.title = title;
         this.targetId = targetId;
         this.sourceId = sourceId;
         this.message = message;
@@ -77,7 +81,8 @@ public class Notification implements Releasable<NotificationDTO> {
         this.systemId = systemId;
     }
 
-    public Notification(Long targetId, Long sourceId, String message, Map<String, String> additional,Long systemId) {
+    public Notification(String title, Long targetId, Long sourceId, String message, Map<String, String> additional,Long systemId) {
+        this.title = title;
         this.targetId = targetId;
         this.sourceId = sourceId;
         this.message = message;
@@ -89,7 +94,8 @@ public class Notification implements Releasable<NotificationDTO> {
         this.systemId = systemId;
     }
 
-    public Notification(Long targetId, Long sourceId, String message, String url, Long systemId) {
+    public Notification(String title, Long targetId, Long sourceId, String message, String url, Long systemId) {
+        this.title = title;
         this.targetId = targetId;
         this.sourceId = sourceId;
         this.message = message;
@@ -101,7 +107,8 @@ public class Notification implements Releasable<NotificationDTO> {
         this.systemId = systemId;
     }
 
-    public Notification(Long targetId, Long sourceId, String message, Map<String, String> additional, String url, Long systemId) {
+    public Notification(String title, Long targetId, Long sourceId, String message, Map<String, String> additional, String url, Long systemId) {
+        this.title = title;
         this.targetId = targetId;
         this.sourceId = sourceId;
         this.message = message;
@@ -116,7 +123,7 @@ public class Notification implements Releasable<NotificationDTO> {
     @Override
     public NotificationDTO release(User session_user) {
         NotificationDTO dto = new NotificationDTO();
-        dto.setId(id).setAdditional(additional).setRead(isRead)
+        dto.setTitle(title).setId(id).setAdditional(additional).setRead(isRead).setUrl(url)
                 .setTargetId(targetId).setSourceId(sourceId).setMessage(message).setSystemId(systemId);
         return dto;
     }

@@ -94,7 +94,7 @@ public class PublicController {
             Map<String, String> context = getContext(feedback);
             if (context.get("type").equals("account")) {
                 List<Long> ids = List.of(Long.valueOf(context.get("creator")), Long.valueOf(context.get("assigner")), Long.valueOf(context.get("referrer")));
-                notification_service.systemNotify(ids, "${object_name} sent a new feedback that you followed", context.get("object_name"), feedback.getLink(), feedback.getSystemId());
+                notification_service.systemNotify("Feedback", ids, "${object_name} sent a new feedback that you followed", context.get("object_name"), feedback.getLink(), feedback.getSystemId());
             }
 
             access_token_service.deleteById(access_token.getId());

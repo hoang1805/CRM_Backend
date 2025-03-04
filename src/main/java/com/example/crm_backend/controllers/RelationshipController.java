@@ -62,7 +62,7 @@ public class RelationshipController {
         }
 
         Relationship relationship = relationship_service.create(relationship_DTO, current_user);
-        notification_service.notifyAll(current_user, new ArrayList<>(),"${user} created Relationship ${object_name}", Map.of("object_name", relationship.getName()), relationship.getLink(), relationship.getSystemId());
+        notification_service.notifyAll(current_user, "Relationship", new ArrayList<>(), "${user} created Relationship ${object_name}", Map.of("object_name", relationship.getName()), relationship.getLink(), relationship.getSystemId());
 
         return ResponseEntity.ok(Map.of("relationship", relationship.release(current_user)));
     }
@@ -86,7 +86,7 @@ public class RelationshipController {
         try {
             Relationship relationship = relationship_service.edit(id, relationship_DTO);
 //            notification_service.notify(current_user, List.of(relationship.getCreatorId()),  "${user} edited Relationship ${object_name}", relationship.getName(), relationship.getLink());
-            notification_service.notifyAll(current_user, new ArrayList<>(),"${user} edited Relationship ${object_name}", Map.of("object_name", relationship.getName()), relationship.getLink(), relationship.getSystemId());
+            notification_service.notifyAll(current_user, "Relationship", new ArrayList<>(),"${user} edited Relationship ${object_name}", Map.of("object_name", relationship.getName()), relationship.getLink(), relationship.getSystemId());
 
             return ResponseEntity.ok(Map.of("relationship", relationship.release(current_user)));
         } catch (Exception e) {
@@ -113,7 +113,7 @@ public class RelationshipController {
         try {
             Relationship relationship = relationship_service.editColor(id, relationship_DTO);
 //            notification_service.notify(current_user, List.of(relationship.getCreatorId()),  "${user} edited Relationship ${object_name}", relationship.getName(), relationship.getLink());
-            notification_service.notifyAll(current_user, new ArrayList<>(),"${user} edited Relationship ${object_name}", Map.of("object_name", relationship.getName()), relationship.getLink(), relationship.getSystemId());
+            notification_service.notifyAll(current_user, "Relationship", new ArrayList<>(),"${user} edited Relationship ${object_name}", Map.of("object_name", relationship.getName()), relationship.getLink(), relationship.getSystemId());
 
             return ResponseEntity.ok(Map.of("relationship", relationship.release(current_user)));
         } catch (Exception e) {
@@ -140,7 +140,7 @@ public class RelationshipController {
         try {
             relationship_service.delete(id);
 //            notification_service.notify(current_user, List.of(current_relationship.getCreatorId()),  "${user} deleted Relationship ${object_name}", current_relationship.getName());
-            notification_service.notifyAll(current_user, new ArrayList<>(),"${user} deleted Relationship ${object_name}", Map.of("object_name", current_relationship.getName()), "", current_relationship.getSystemId());
+            notification_service.notifyAll(current_user, "Relationship", new ArrayList<>(),"${user} deleted Relationship ${object_name}", Map.of("object_name", current_relationship.getName()), "", current_relationship.getSystemId());
             return ResponseEntity.ok(Map.of("message", "Delete successfully"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));

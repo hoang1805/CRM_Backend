@@ -13,6 +13,8 @@ import java.util.Map;
 public class NotificationDTO {
     private Long id;
 
+    private String title;
+
     @JsonProperty("target_id")
     private Long targetId;
 
@@ -23,6 +25,8 @@ public class NotificationDTO {
 
     @JsonProperty("is_read")
     private boolean isRead;
+
+    private String url;
 
     private Map<String, String> additional;
 

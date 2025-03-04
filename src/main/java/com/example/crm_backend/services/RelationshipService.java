@@ -48,6 +48,7 @@ public class RelationshipService {
      public Relationship create(RelationshipDTO relationship_DTO, User creator) {
         Relationship relationship = new Relationship();
          ObjectMapper.mapAll(relationship_DTO, relationship);
+         relationship.setSystemId(creator.getSystemId());
 
          try {
              RelationshipValidator validator = new RelationshipValidator(relationship, this);

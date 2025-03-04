@@ -62,7 +62,7 @@ public class SourceController {
         }
 
         Source source = source_service.create(source_DTO, current_user);
-        notification_service.notifyAll(current_user, new ArrayList<>(),"${user} created new Source ${object_name}", Map.of("object_name", source.getName()), source.getLink(), source.getSystemId());
+        notification_service.notifyAll(current_user, "Source", new ArrayList<>(),"${user} created new Source ${object_name}", Map.of("object_name", source.getName()), source.getLink(), source.getSystemId());
 
         return ResponseEntity.ok(Map.of("source", source.release(current_user)));
     }
@@ -90,7 +90,7 @@ public class SourceController {
         try {
             Source source = source_service.edit(id, source_DTO);
 //            notification_service.notify(current_user, List.of(source.getCreatorId()), "${user} edited Source ${object_name}", source.getName(), source.getLink());
-            notification_service.notifyAll(current_user, new ArrayList<>(),"${user} edited Source ${object_name}", Map.of("object_name", source.getName()), source.getLink(), source.getSystemId());
+            notification_service.notifyAll(current_user, "Source", new ArrayList<>(),"${user} edited Source ${object_name}", Map.of("object_name", source.getName()), source.getLink(), source.getSystemId());
 
             return ResponseEntity.ok(Map.of("source", source.release(current_user)));
         } catch (Exception e) {
@@ -121,7 +121,7 @@ public class SourceController {
         try {
             source_service.delete(id);
 //            notification_service.notify(current_user, List.of(current_source.getCreatorId()), "${user} deleted Source ${object_name}", current_source.getName());
-            notification_service.notifyAll(current_user, new ArrayList<>(),"${user} deleted new Source ${object_name}", Map.of("object_name", current_source.getName()), "", current_source.getSystemId());
+            notification_service.notifyAll(current_user, "Source", new ArrayList<>(),"${user} deleted new Source ${object_name}", Map.of("object_name", current_source.getName()), "", current_source.getSystemId());
             return ResponseEntity.ok(Map.of("message", "Delete successfully"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));

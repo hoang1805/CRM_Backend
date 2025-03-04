@@ -20,4 +20,18 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     void markAllAsReadByUser(@Param("userId") Long userId, @Param("systemId") Long systemId);
 
     Page<Notification> findByTargetIdAndSystemId(Long target_id, Long system_id, Pageable request);
+
+    @Query(value = "SELECT * FROM notifications " +
+            "WHERE target_id = :target_id " +
+            "AND system_id = :system_id " +
+            "ORDER BY id DESC",
+            countQuery = "SELECT COUNT(*) FROM notifications " +
+                    "WHERE target_id = :target_id " +
+                    "AND system_id = :system_id ",
+            nativeQuery = true)
+    Page<Notification> getNotifications(@Param("target_id") Long target_id, @Param("system_id") Long system_id, Pageable request);
+
+    long countByTargetIdAndSystemId(Long target_id, Long system_id);
+
+    long countByTargetIdAndSystemIdAndIsRead(Long target_id, Long system_id, boolean is_read);
 }

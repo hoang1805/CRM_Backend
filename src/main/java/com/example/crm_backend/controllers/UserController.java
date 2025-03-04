@@ -216,7 +216,7 @@ public class UserController {
 
         try {
             user = user_service.grantManager(id);
-            notification_service.notify(current_user, List.of(user.getId()), "${user} grant manager role to you", "", user.getLink(), user.getSystemId());
+            notification_service.notify(current_user, "User", List.of(user.getId()), "${user} grant manager role to you", "", user.getLink(), user.getSystemId());
             return ResponseEntity.ok(Map.of("user", user.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -245,7 +245,7 @@ public class UserController {
 
         try {
             user = user_service.grantAdmin(id);
-            notification_service.notify(current_user, List.of(user.getId()), "${user} grant admin role to you", "", user.getLink(), user.getSystemId());
+            notification_service.notify(current_user, "User", List.of(user.getId()), "${user} grant admin role to you", "", user.getLink(), user.getSystemId());
             return ResponseEntity.ok(Map.of("user", user.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -278,7 +278,7 @@ public class UserController {
 
         try {
             user = user_service.grantStaff(id);
-            notification_service.notify(current_user, List.of(user.getId()), "${user} grant staff role to you", "", user.getLink(), user.getSystemId());
+            notification_service.notify(current_user, "User", List.of(user.getId()), "${user} grant staff role to you", "", user.getLink(), user.getSystemId());
             return ResponseEntity.ok(Map.of("user", user.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
