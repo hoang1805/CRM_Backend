@@ -1,7 +1,10 @@
 package com.example.crm_backend.dtos;
 
 import com.example.crm_backend.dtos.account.AccountDTO;
+import com.example.crm_backend.enums.Process;
+import com.example.crm_backend.utils.converter.MapConverter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Convert;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -21,6 +24,12 @@ public class TaskDTO {
     private String description;
 
     private String note;
+
+    private Process process;
+
+    private boolean expired;
+
+    private Map<String, String> data;
 
     private String project;
 
@@ -65,11 +74,14 @@ public class TaskDTO {
 
     }
 
-    public TaskDTO(Long id, String name, String description, String note, String project, String attachment, Long startDate, Long endDate, Long status, Long managerId, Long participantId, Long accountId, Long creatorId, Long createdAt, Long lastUpdate, Long systemId) {
+    public TaskDTO(Long id, String name, String description, String note, Process process, boolean expired, Map<String, String> data, String project, String attachment, Long startDate, Long endDate, Long status, Long managerId, Long participantId, Long accountId, Long creatorId, Long createdAt, Long lastUpdate, Long systemId, AccountDTO accountExport) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.note = note;
+        this.process = process;
+        this.expired = expired;
+        this.data = data;
         this.project = project;
         this.attachment = attachment;
         this.startDate = startDate;
@@ -82,6 +94,6 @@ public class TaskDTO {
         this.createdAt = createdAt;
         this.lastUpdate = lastUpdate;
         this.systemId = systemId;
+        this.accountExport = accountExport;
     }
-
 }

@@ -245,6 +245,7 @@ public class TaskController {
             notification_service.notify(current_user, "Task", List.of(new_task.getCreatorId(), new_task.getManagerId(), new_task.getParticipantId()), "${user} requested approval a Task ${object_name} that you followed", new_task.getName(), new_task.getLink());
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
+//            throw  e;
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
@@ -343,6 +344,79 @@ public class TaskController {
         try {
             Task new_task = task_service.cancel(id, current_user);
             notification_service.notify(current_user, "Task", List.of(new_task.getCreatorId(), new_task.getManagerId(), new_task.getParticipantId()), "${user} canceled a Task ${object_name} that you followed", new_task.getName(), new_task.getLink());
+            return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/enable.reminder/{id}")
+    public ResponseEntity<Object> enableReminder(@PathVariable("id") Long id, HttpServletRequest request) {
+        User current_user = SessionHelper.getSessionUser(request, user_service);
+        if (current_user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
+        }
+
+        Task task = task_service.getTask(id);
+        if (task == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Invalid task"));
+        }
+
+        if (!task.acl().canEdit(current_user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
+        }
+
+        try {
+            Task new_task = task_service.enableRemind(id, current_user);
+            return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
+        } catch (Exception e) {
+            throw e;
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/disable.reminder/{id}")
+    public ResponseEntity<Object> disableReminder(@PathVariable("id") Long id, HttpServletRequest request) {
+        User current_user = SessionHelper.getSessionUser(request, user_service);
+        if (current_user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
+        }
+
+        Task task = task_service.getTask(id);
+        if (task == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Invalid task"));
+        }
+
+        if (!task.acl().canEdit(current_user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
+        }
+
+        try {
+            Task new_task = task_service.disableRemind(id, current_user);
+            return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/edit.reminder/{id}")
+    public ResponseEntity<Object> editReminder(@PathVariable("id") Long id, @RequestBody Long duration, HttpServletRequest request) {
+        User current_user = SessionHelper.getSessionUser(request, user_service);
+        if (current_user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
+        }
+
+        Task task = task_service.getTask(id);
+        if (task == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Invalid task"));
+        }
+
+        if (!task.acl().canEdit(current_user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
+        }
+
+        try {
+            Task new_task = task_service.editRemind(id, current_user, duration);
             return ResponseEntity.ok(Map.of("task", new_task.release(current_user)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));

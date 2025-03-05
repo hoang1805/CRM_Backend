@@ -14,7 +14,7 @@ public class RemindValidator {
     }
 
     public RemindValidator validRemindTime() {
-        if (remind.getRemindTime() == null || remind.getRemindTime() < Timer.now()) {
+        if (remind.getRemindTime() == null || (remind.getRemindTime() < Timer.now() && !remind.isReminded())) {
             throw new IllegalStateException("Invalid remind time");
         }
 

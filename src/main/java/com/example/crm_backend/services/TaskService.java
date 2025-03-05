@@ -20,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -69,9 +70,15 @@ public class TaskService {
         Task task = new Task();
         ObjectMapper.mapAll(task_dto, task);
         task.setStatus((long) Task.DRAFT);
+        task.setData(new HashMap<>());
 
         TaskValidator validator = new TaskValidator(task, this);
         validator.validate();
+
+        task.setEndDate(Timer.endOfDay(task.getEndDate()));
+
+        calculateProcess(task);
+        checkExpiredTask(task);
 
         task.setCreatorId(user.getId());
         task.setCreatedAt(Timer.now());
@@ -150,11 +157,16 @@ public class TaskService {
             task.setManagerId(dto.getManagerId());
         }
 
+        task.setEndDate(Timer.endOfDay(task.getEndDate()));
         this.calculateProcess(task);
-
 
         TaskValidator validator = new TaskValidator(task, this);
         validator.validate();
+
+        if (task.isRemind()) {
+            remind_service.edit(task.getRemind(), task.getEndDate() - task.getDuration());
+        }
+
         checkExpiredTask(task);
         task.setLastUpdate(Timer.now());
 
@@ -320,6 +332,10 @@ public class TaskService {
             throw new IllegalStateException("Invalid task. Please try again");
         }
 
+        if (task.isRemind()) {
+            throw new IllegalStateException("This task has already been enabled remind.");
+        }
+
         long status = task.getStatus();
 
         if (status == Task.DRAFT) {
@@ -344,13 +360,43 @@ public class TaskService {
             Remind remind = remind_service.create(message, remindTime, data, task.collectUsers(), task.getLink(), task.getSystemId());
 
             task.enableRemind();
-            task.setDuration(duration);
+            task.addDuration(duration);
             task.addRemind(remind);
 
             return task_repository.save(task);
         } catch (Exception e) {
             throw new IllegalStateException(e.getMessage());
         }
+    }
+
+    public Task editRemind(Long task_id, User user, Long duration) {
+        Task task = this.getTask(task_id, user.getSystemId());
+
+        if (task == null) {
+            throw new IllegalStateException("Invalid task. Please try again");
+        }
+
+        if (!system_service.existsById(task.getSystemId())) {
+            throw new IllegalStateException("Invalid task. Please try again");
+        }
+
+        if (!task.isRemind()) {
+            throw new IllegalStateException("This task is not enabled remind.");
+        }
+
+        if (duration == null) {
+            throw new IllegalStateException("Invalid duration. Please try again");
+        }
+
+        Long remind_id = task.getRemind();
+        if (remind_id == null) {
+            throw new IllegalStateException("Invalid reminder");
+        }
+
+        Remind remind = remind_service.edit(remind_id, task.getEndDate() - duration);
+        task.addDuration(duration);
+
+        return task_repository.save(task);
     }
 
     public Task disableRemind(Long task_id, User user) {
@@ -372,6 +418,10 @@ public class TaskService {
     }
 
     private void disableRemind(Task task) {
+        if (!task.isRemind()) {
+            return;
+        }
+
         Long remind_id = task.getRemind();
         remind_service.delete(remind_id);
 

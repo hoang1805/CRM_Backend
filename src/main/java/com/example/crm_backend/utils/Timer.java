@@ -16,11 +16,12 @@ public class Timer {
 
         // Lấy cuối ngày (23:59:59.999)
         ZonedDateTime endOfDay = zonedDateTime.toLocalDate()
-                .atTime(23, 59, 59, 999_999_999)
+                .atTime(23, 59, 59, 999_000_000) // Chỉ giữ mili giây
                 .atZone(ZoneId.systemDefault());
 
         return endOfDay.toInstant().toEpochMilli();
     }
+
 
     public static Long endOfMonth(Long time){
         Instant instant = Instant.ofEpochMilli(time);

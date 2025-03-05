@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface RemindRepository extends JpaRepository<Remind, Long> {
 
-    @Query("SELECT r FROM Remind r WHERE r.remindTime < now AND r.enabled = true AND r.reminded = false")
-    List<Remind> findReminder(@Param("now") Long now);
+    @Query("SELECT r FROM Remind r WHERE r.remindTime < :now AND r.enabled = true AND r.reminded = false")
+    List<Remind> getReminders(@Param("now") Long now);
 }

@@ -1,7 +1,6 @@
 package com.example.crm_backend.services.cronjob;
 
 import com.example.crm_backend.entities.remind.Remind;
-import com.example.crm_backend.entities.task.Task;
 import com.example.crm_backend.repositories.RemindRepository;
 import com.example.crm_backend.services.NotificationService;
 import com.example.crm_backend.services.RemindService;
@@ -31,7 +30,7 @@ public class Reminder {
     public synchronized void checkReminders() {
         Long now = Timer.now();
 
-        List<Remind> reminds = remind_repository.findReminder(now);
+        List<Remind> reminds = remind_repository.getReminders(now);
         if (reminds.isEmpty()) {
             return;
         }

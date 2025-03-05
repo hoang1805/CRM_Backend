@@ -4,6 +4,7 @@ import com.example.crm_backend.dtos.RemindDTO;
 import com.example.crm_backend.entities.remind.Remind;
 import com.example.crm_backend.entities.remind.RemindValidator;
 import com.example.crm_backend.repositories.RemindRepository;
+import com.example.crm_backend.utils.Timer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -67,6 +68,28 @@ public class RemindService {
             if (dto.getUserIds() != null) {
                 remind.setUserIds(dto.getUserIds());
             }
+
+            RemindValidator validator = new RemindValidator(remind, this);
+            validator.validate();
+
+            return remind_repository.save(remind);
+        } catch (Exception e) {
+            throw new IllegalStateException(e.getMessage());
+        }
+    }
+
+    public Remind edit(Long id, Long remindTime) {
+        Remind remind = this.getRemind(id);
+        if (remind == null) {
+            throw new IllegalStateException("Remind not found");
+        }
+
+        try {
+            remind.setReminded(false);
+            if (remindTime < Timer.now()) {
+                remind.setReminded(true);
+            }
+            remind.setRemindTime(remindTime);
 
             RemindValidator validator = new RemindValidator(remind, this);
             validator.validate();

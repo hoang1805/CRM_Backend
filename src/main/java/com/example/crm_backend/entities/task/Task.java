@@ -141,10 +141,10 @@ public class Task implements Releasable<TaskDTO>, HasLink {
     }
 
     public void disableRemind() {
-        data.put("disable_remind", String.valueOf(false));
+        data.put("enable_remind", String.valueOf(false));
     }
 
-    public void setDuration(Long duration) {
+    public void addDuration(Long duration) {
         if (duration == null) {
             duration = 0L;
         }
@@ -157,7 +157,11 @@ public class Task implements Releasable<TaskDTO>, HasLink {
             return 0L;
         }
 
-        return Long.parseLong(value);
+        try {
+            return Long.parseLong(value);
+        } catch (Exception e) {
+            return 0L;
+        }
     }
 
     public void addRemind(Remind remind) {
@@ -186,6 +190,7 @@ public class Task implements Releasable<TaskDTO>, HasLink {
     public TaskDTO release(User session_user) {
         TaskDTO dto = new TaskDTO();
         dto.setId(id).setName(name).setDescription(description).setNote(note)
+                .setProcess(process).setExpired(expired).setData(data)
                 .setProject(project).setAttachment(attachment).setStartDate(startDate)
                 .setEndDate(endDate).setStatus(status).setManagerId(managerId)
                 .setParticipantId(participantId).setAccountId(accountId)
