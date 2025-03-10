@@ -73,120 +73,111 @@ public class SearchEngine {
             }
         }
 
-//        for (Account account : accounts) {
-//            if (equalsIgnoreCase(account.getName(), query)) {
-//                return account;
-//            }
-//        }
-
         return null;
     }
 
-    public User searchUser(String query) {
+    public User searchUser(String query, long systemId) {
         if (!isExist("users")) {
             addData("users", user_repository.findAll());
         }
 
         List<User> users = (List<User>) getData("users");
         for (User user : users) {
-            if (user.getUsername().equals(query)) {
-                return user;
-            }
-
-            try {
-                Long id = Long.parseLong(query);
-                if (user.getId().equals(id)) {
+            if (user.getSystemId() == systemId) {
+                if (user.getUsername().equals(query)) {
                     return user;
                 }
-            } catch (Exception _) {
+
+                try {
+                    Long id = Long.parseLong(query);
+                    if (user.getId().equals(id)) {
+                        return user;
+                    }
+                } catch (Exception _) {
+                }
             }
         }
 
         for (User user : users) {
-            if (equalsIgnoreCase(user.getName(), query)) {
-                return user;
+            if (user.getSystemId() == systemId) {
+                if (equalsIgnoreCase(user.getName(), query)) {
+                    return user;
+                }
             }
         }
 
         return null;
     }
 
-    public Source searchSource(String query) {
+    public Source searchSource(String query, long systemId) {
         if (!isExist("sources")) {
             addData("sources", source_repository.findAll());
         }
 
         List<Source> sources = (List<Source>) getData("sources");
         for (Source source : sources) {
-//            System.out.println(source.getCode());
-//            System.out.println(query);
-            if (source.getCode().equals(query)) {
-                return source;
+            if (source.getSystemId() == systemId) {
+                if (source.getCode().equals(query)) {
+                    return source;
+                }
             }
         }
-
-//        for (Source source : sources) {
-//            if (equalsIgnoreCase(source.getCode(), query)) {
-//                return source;
-//            }
-//
-//            if (source.getName().equals(query)) {
-//                return source;
-//            }
-//
-//            if (equalsIgnoreCase(source.getName(), query)) {
-//                return source;
-//            }
-//        }
-
         return null;
     }
 
-    public Source searchSourceById(String query) {
+    public Source searchSourceById(String query, long systemId) {
         if (!isExist("sources")) {
             addData("sources", source_repository.findAll());
         }
 
         List<Source> sources = (List<Source>) getData("sources");
         for (Source source : sources) {
-            if (source.getId().equals(Long.parseLong(query))) {
-                return source;
+            if (source.getSystemId() == systemId) {
+                if (source.getId().equals(Long.parseLong(query))) {
+                    return source;
+                }
             }
         }
 
         return null;
     }
 
-    public Relationship searchRelationship(String query) {
+    public Relationship searchRelationship(String query, long systemId) {
         if (!isExist("relationships")) {
             addData("relationships", relationship_repository.findAll());
         }
 
         List<Relationship> relationships = (List<Relationship>) getData("relationships");
         for (Relationship relationship : relationships) {
-            if (relationship.getName().equals(query)) {
-                return relationship;
+            if (relationship.getSystemId() == systemId) {
+                if (relationship.getName().equals(query)) {
+                    return relationship;
+                }
             }
         }
 
         for (Relationship relationship : relationships) {
-            if (equalsIgnoreCase(relationship.getName(), query)) {
-                return relationship;
+            if (relationship.getSystemId() == systemId) {
+                if (equalsIgnoreCase(relationship.getName(), query)) {
+                    return relationship;
+                }
             }
         }
 
         return null;
     }
 
-    public Relationship searchRelationshipById(String query) {
+    public Relationship searchRelationshipById(String query, long systemId) {
         if (!isExist("relationships")) {
             addData("relationships", relationship_repository.findAll());
         }
 
         List<Relationship> relationships = (List<Relationship>) getData("relationships");
         for (Relationship relationship : relationships) {
-            if (relationship.getId().equals(Long.parseLong(query))) {
-                return relationship;
+            if (relationship.getSystemId() == systemId) {
+                if (relationship.getId().equals(Long.parseLong(query))) {
+                    return relationship;
+                }
             }
         }
 

@@ -33,7 +33,7 @@ public class AccountImporter {
         this.search_engine = search_engine;
     }
 
-    public List<AccountDTO> readFile(MultipartFile file, Map<String, Boolean> options) {
+    public List<AccountDTO> readFile(MultipartFile file, Map<String, Boolean> options, long systemId) {
         boolean ignore_error = options.getOrDefault("ignore_error", false);
         try {
             List<Map<String, String>> data = ExcelImporter.readFile(file.getInputStream(), account_columns, options, LIMIT);
@@ -44,7 +44,7 @@ public class AccountImporter {
                 }
 
                 try {
-                    accounts.add(readRow(data.get(i)));
+                    accounts.add(readRow(data.get(i), systemId));
                 } catch (Exception e) {
                     if (!ignore_error) {
                         throw new IllegalStateException("Có lỗi ở dòng " + i + ": " + e.getMessage());
@@ -59,7 +59,7 @@ public class AccountImporter {
 
     }
 
-    public AccountDTO readRow(Map<String, String> row) {
+    public AccountDTO readRow(Map<String, String> row, long systemId) {
         AccountDTO dto = new AccountDTO();
 
         readName(dto, row.get("name"));
@@ -68,14 +68,14 @@ public class AccountImporter {
         readGender(dto, row.get("gender"));
         readEmail(dto, row.get("email"));
 
-        readAssignedUser(dto, row.get("assigned_user"));
+        readAssignedUser(dto, row.get("assigned_user"), systemId);
         readBirthday(dto, row.get("birthday"));
 
         dto.setJob(row.get("job"));
 
-        readSource(dto, row.get("source"));
-        readReferrer(dto, row.get("referrer"));
-        readRelationship(dto, row.get("relationship"));
+        readSource(dto, row.get("source"), systemId);
+        readReferrer(dto, row.get("referrer"), systemId);
+        readRelationship(dto, row.get("relationship"), systemId);
         return dto;
     }
 
@@ -160,12 +160,12 @@ public class AccountImporter {
         dto.setEmail(email);
     }
 
-    private void readAssignedUser(AccountDTO dto, String assigned) {
+    private void readAssignedUser(AccountDTO dto, String assigned, long systemId) {
         if (assigned == null || assigned.isEmpty()) {
             return ;
         }
 
-        User user = search_engine.searchUser(assigned);
+        User user = search_engine.searchUser(assigned, systemId);
         if (user == null) {
             throw new IllegalStateException("Invalid assigned user");
         }
@@ -181,12 +181,12 @@ public class AccountImporter {
         dto.setBirthday(Importer.readDate(birthday));
     }
 
-    private void readSource(AccountDTO dto, String source) {
+    private void readSource(AccountDTO dto, String source, long systemId) {
         if (source == null || source.isEmpty()) {
             throw new IllegalStateException("Source is empty");
         }
 
-        Source result = search_engine.searchSource(source);
+        Source result = search_engine.searchSource(source, systemId);
         if (result == null) {
             throw new IllegalStateException("Invalid source");
         }
@@ -194,12 +194,12 @@ public class AccountImporter {
         dto.setSourceId(result.getId());
     }
 
-    private void readRelationship(AccountDTO dto, String relationship) {
+    private void readRelationship(AccountDTO dto, String relationship, long systemId) {
         if (relationship == null || relationship.isEmpty()) {
             return ;
         }
 
-        Relationship res = search_engine.searchRelationship(relationship);
+        Relationship res = search_engine.searchRelationship(relationship, systemId);
         if(res == null) {
             return ;
         }
@@ -207,12 +207,12 @@ public class AccountImporter {
         dto.setRelationshipId(res.getId());
     }
 
-    private void readReferrer(AccountDTO dto, String referrer) {
+    private void readReferrer(AccountDTO dto, String referrer, long systemId) {
         if (referrer == null || referrer.isEmpty()) {
             throw new IllegalStateException("Referrer is empty");
         }
 
-        User user = search_engine.searchUser(referrer);
+        User user = search_engine.searchUser(referrer, systemId);
         if (user == null) {
             throw new IllegalStateException("Invalid referrer");
         }

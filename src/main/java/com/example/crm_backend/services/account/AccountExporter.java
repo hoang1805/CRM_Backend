@@ -34,7 +34,7 @@ public class AccountExporter {
         account_repository = accountRepository;
     }
 
-    private List<Object> export(Account account) {
+    private List<Object> export(Account account, long systemId) {
         List<Object> row = new ArrayList<>();
         row.add(account.getName());
         row.add(account.getPhone());
@@ -45,7 +45,7 @@ public class AccountExporter {
         row.add(account.getEmail());
 
         Long assigned_user_id = account.getAssignedUserId();
-        User user = search_engine.searchUser(String.valueOf(assigned_user_id));
+        User user = search_engine.searchUser(String.valueOf(assigned_user_id), systemId);
         if (user != null) {
             row.add(user.getUsername());
         } else {
@@ -62,21 +62,21 @@ public class AccountExporter {
 
         row.add(account.getJob());
 
-        Source source = search_engine.searchSourceById(String.valueOf(account.getSourceId()));
+        Source source = search_engine.searchSourceById(String.valueOf(account.getSourceId()), systemId);
         if (source != null) {
             row.add(source.getCode());
         } else {
             row.add(null);
         }
 
-        User referrer = search_engine.searchUser(String.valueOf(account.getReferrerId()));
+        User referrer = search_engine.searchUser(String.valueOf(account.getReferrerId()), systemId);
         if (referrer != null) {
             row.add(referrer.getUsername());
         } else {
             row.add(null);
         }
 
-        Relationship relationship = search_engine.searchRelationshipById(String.valueOf(account.getRelationshipId()));
+        Relationship relationship = search_engine.searchRelationshipById(String.valueOf(account.getRelationshipId()), systemId);
         if (relationship != null) {
             row.add(relationship.getName());
         } else {
@@ -86,11 +86,11 @@ public class AccountExporter {
         return row;
     }
 
-    public ByteArrayResource exportAccounts(List<Long> account_ids) {
+    public ByteArrayResource exportAccounts(List<Long> account_ids, long systemId) {
         List<Account> accounts = account_repository.findAllById(account_ids);
         List<List<Object>> data = new ArrayList<>();
         for (Account account : accounts) {
-            data.add(export(account));
+            data.add(export(account, systemId));
         }
 
         return ExcelExporter.generateFile(columns, data);

@@ -240,7 +240,7 @@ public class AccountController {
         refined_options.put("allow_override", Boolean.parseBoolean(options.getOrDefault("allow_override", "false").toString()));
 
         try {
-            List<AccountDTO> data = account_importer.readFile(file, refined_options);
+            List<AccountDTO> data = account_importer.readFile(file, refined_options, current_user.getSystemId());
             return ResponseEntity.ok(data);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
@@ -318,7 +318,7 @@ public class AccountController {
         }
 
         try {
-            ByteArrayResource resource = account_exporter.exportAccounts(account_ids);
+            ByteArrayResource resource = account_exporter.exportAccounts(account_ids, current_user.getSystemId());
 
             return ResponseEntity.ok()
                     .header("Content-Disposition", "attachment; filename=template.xlsx")
