@@ -67,7 +67,7 @@ public class AccountController {
         }
 
         if (!account.acl().canView(current_user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "You do not have access"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN","message", "You do not have access"));
         }
 
         return ResponseEntity.ok(Map.of("account", account.release(current_user)));
