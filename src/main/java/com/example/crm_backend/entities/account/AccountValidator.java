@@ -70,7 +70,7 @@ public class AccountValidator extends Validator {
             throw new IllegalStateException("Source field is empty. Please try again");
         }
 
-        if (account.getBirthday() > Timer.now()) {
+        if (account.getBirthday() != null && account.getBirthday() > Timer.now()) {
             throw new IllegalStateException("Invalid birthday. Please try again");
         }
     }

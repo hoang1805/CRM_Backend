@@ -113,8 +113,6 @@ public class Account implements Releasable<AccountDTO>, Exportable, HasLink {
         this.gender = gender;
     }
 
-
-
     public AccountACL acl() {
         if (this.acl == null) {
             this.acl = new AccountACL(this);

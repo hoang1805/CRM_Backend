@@ -218,7 +218,7 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
-        if (current_user.getRole() != Role.ADMIN) {
+        if (current_user.getRole() != Role.ADMIN && current_user.getRole() != Role.MANAGER) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 
@@ -305,6 +305,7 @@ public class AccountController {
             int success = account_service.importAccounts(accounts, current_user, refined_options.get("ignore_error"), refined_options.get("allow_override"));
             return ResponseEntity.ok(Map.of("success", success));
         } catch (Exception e) {
+//            throw e;
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("code", "BAD_REQUEST", "message", e.getMessage()));
         }
     }
