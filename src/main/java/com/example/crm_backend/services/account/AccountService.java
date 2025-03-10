@@ -151,7 +151,7 @@ public class AccountService {
 //        System.out.println(override + " and " + ignore_error);
         List<Account> accounts = new ArrayList<>();
         for (AccountDTO dto : dtos) {
-            Account account = search_engine.searchAccount(dto.getCode());
+            Account account = search_engine.searchAccount(dto.getCode(), user.getSystemId());
             if (account == null) {
                 try {
                     Account new_account = new Account();

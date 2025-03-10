@@ -50,23 +50,26 @@ public class SearchEngine {
         return a.equalsIgnoreCase(b);
     }
 
-    public Account searchAccount(String query) {
+    public Account searchAccount(String query, long systemId) {
         if (!isExist("accounts")) {
             addData("accounts", account_repository.findAll());
         }
 
         List<Account> accounts = (List<Account>) getData("accounts");
         for (Account account : accounts) {
-            if (account.getCode().equals(query) ) {
-                return account;
-            }
+            if (account.getSystemId() == systemId) {
 
-            try {
-                Long id = Long.parseLong(query);
-                if (account.getId().equals(id) || account.getSystemId().equals(id)) {
+                if (account.getCode().equals(query)) {
                     return account;
                 }
-            } catch (Exception _) {
+
+                try {
+                    Long id = Long.parseLong(query);
+                    if (account.getId().equals(id)) {
+                        return account;
+                    }
+                } catch (Exception _) {
+                }
             }
         }
 
@@ -100,10 +103,6 @@ public class SearchEngine {
         }
 
         for (User user : users) {
-//            if (user.getName().equals(query)) {
-//                return user;
-//            }
-
             if (equalsIgnoreCase(user.getName(), query)) {
                 return user;
             }
