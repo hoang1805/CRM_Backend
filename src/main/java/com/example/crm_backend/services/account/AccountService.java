@@ -195,6 +195,7 @@ public class AccountService {
             account.setSourceId(new_account.getSourceId());
             account.setReferrerId(new_account.getReferrerId());
             account.setRelationshipId(new_account.getRelationshipId());
+            account.setSystemId(user.getSystemId());
 
             try {
                 AccountValidator validator = new AccountValidator(account, this);

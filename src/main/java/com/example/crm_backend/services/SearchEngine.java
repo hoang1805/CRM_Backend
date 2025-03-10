@@ -57,13 +57,13 @@ public class SearchEngine {
 
         List<Account> accounts = (List<Account>) getData("accounts");
         for (Account account : accounts) {
-            if (account.getCode().equals(query)) {
+            if (account.getCode().equals(query) ) {
                 return account;
             }
 
             try {
                 Long id = Long.parseLong(query);
-                if (account.getId().equals(id)) {
+                if (account.getId().equals(id) || account.getSystemId().equals(id)) {
                     return account;
                 }
             } catch (Exception _) {
