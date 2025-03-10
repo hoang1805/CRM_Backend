@@ -26,8 +26,9 @@ public class AccountACL {
             return true;
         }
 
-        Long user_id = user.getId();
-        return Objects.equals(user_id, account.getCreatorId()) || Objects.equals(user_id, account.getAssignedUserId());
+        return true;
+//        Long user_id = user.getId();
+//        return Objects.equals(user_id, account.getCreatorId()) || Objects.equals(user_id, account.getAssignedUserId());
     }
 
     public boolean canEdit(User user){
