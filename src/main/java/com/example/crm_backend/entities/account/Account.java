@@ -10,6 +10,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -176,5 +178,17 @@ public class Account implements Releasable<AccountDTO>, Exportable, HasLink {
     @Override
     public String getLink() {
         return "/account/" + getId();
+    }
+
+    public List<Long> collectFollowers() {
+        List<Long> list = new ArrayList<>();
+        list.add(referrerId);
+        list.add(creatorId);
+
+        if (assignedUserId != null) {
+            list.add(assignedUserId);
+        }
+
+        return list;
     }
 }
