@@ -27,4 +27,6 @@ public interface SourceRepository extends JpaRepository<Source, Long> {
     void deleteBySystemId(Long system_id);
 
     List<Source> findBySystemId(Long system_id, Sort sort);
+
+    Source findByCodeAndSystemId(String code, Long systemId);
 }

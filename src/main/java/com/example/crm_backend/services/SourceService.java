@@ -40,6 +40,14 @@ public class SourceService {
         return !code.isEmpty() && source_repository.existsByCodeAndSystemId(code, source.getSystemId());
     }
 
+    public Source getByCode(String code, Long system_id) {
+        if (code.isEmpty() || system_id == null) {
+            return null;
+        }
+
+        return source_repository.findByCodeAndSystemId(code, system_id);
+    }
+
     public Source getSource(Long id) {
         return source_repository.getReferenceById(id);
     }
