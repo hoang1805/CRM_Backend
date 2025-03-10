@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 05, 2025 at 12:16 PM
+-- Generation Time: Mar 10, 2025 at 07:19 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
     `created_at` bigint(20) DEFAULT NULL,
     `creator_id` bigint(20) DEFAULT NULL,
     `email` varchar(255) DEFAULT NULL,
-    `birthday` bigint(20) NOT NULL,
+    `birthday` bigint(20) DEFAULT NULL,
     `gender` varchar(255) DEFAULT NULL,
     `job` varchar(255) DEFAULT NULL,
     `last_update` bigint(20) DEFAULT NULL,
@@ -158,7 +158,7 @@ CREATE TABLE IF NOT EXISTS `relationships` (
 
 CREATE TABLE IF NOT EXISTS `reminds` (
                                          `id` bigint(20) NOT NULL AUTO_INCREMENT,
-    `additional` text DEFAULT NULL,
+    `additional` varchar(255) DEFAULT NULL,
     `created_at` bigint(20) DEFAULT NULL,
     `enabled` bit(1) NOT NULL,
     `last_update` bigint(20) DEFAULT NULL,
@@ -167,7 +167,7 @@ CREATE TABLE IF NOT EXISTS `reminds` (
     `reminded` bit(1) NOT NULL,
     `system_id` bigint(20) DEFAULT NULL,
     `url` varchar(255) DEFAULT NULL,
-    `user_ids` text DEFAULT NULL,
+    `user_ids` varchar(255) DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `enabled` (`enabled`,`remind_time`,`system_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -215,7 +215,7 @@ CREATE TABLE IF NOT EXISTS `systems` (
 CREATE TABLE IF NOT EXISTS `tasks` (
                                        `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `account_id` bigint(20) DEFAULT NULL,
-    `attachment` text DEFAULT NULL,
+    `attachment` varchar(255) DEFAULT NULL,
     `created_at` bigint(20) DEFAULT NULL,
     `creator_id` bigint(20) DEFAULT NULL,
     `description` text DEFAULT NULL,
@@ -229,7 +229,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
     `start_date` bigint(20) DEFAULT NULL,
     `status` bigint(20) DEFAULT NULL,
     `system_id` bigint(20) DEFAULT NULL,
-    `data` text DEFAULT NULL,
+    `data` varchar(255) DEFAULT NULL,
     `expired` bit(1) NOT NULL,
     `process` enum('BEGIN','DOING','END','EXPIRED') DEFAULT NULL,
     PRIMARY KEY (`id`)
