@@ -11,6 +11,7 @@ import com.example.crm_backend.utils.SessionHelper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +56,10 @@ public class AppController {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
+        HttpSession session = request.getSession();
+        int timeout = session.getMaxInactiveInterval(); // Đơn vị: giây
+        java.lang.System.out.println("Session timeout: " + timeout + " giây");
 
         Map<String, Object> data = new HashMap<>();
 
