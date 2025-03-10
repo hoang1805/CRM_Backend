@@ -57,10 +57,6 @@ public class AppController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        HttpSession session = request.getSession();
-        int timeout = session.getMaxInactiveInterval(); // Đơn vị: giây
-        java.lang.System.out.println("Session timeout: " + timeout + " giây");
-
         Map<String, Object> data = new HashMap<>();
 
         List<User> users = user_service.getUsersBySystem(user.getSystemId());
