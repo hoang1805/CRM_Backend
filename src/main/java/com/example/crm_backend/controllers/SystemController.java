@@ -69,7 +69,7 @@ public class SystemController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid user"));
         }
 
-        if (Objects.equals(user.getRole(), Role.SUPER_ADMIN)) {
+        if (!Objects.equals(user.getRole(), Role.SUPER_ADMIN)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN", "message", "You do not have permission"));
         }
 

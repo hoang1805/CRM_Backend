@@ -90,6 +90,8 @@ public class SourceService {
 
         Source new_source = new Source();
         ObjectMapper.mapAll(source_DTO, new_source);
+        new_source.setSystemId(source.getSystemId());
+
         source.setName(new_source.getName());
         source.setParentId(new_source.getParentId());
 

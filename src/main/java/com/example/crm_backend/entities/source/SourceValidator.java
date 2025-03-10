@@ -40,12 +40,12 @@ public class SourceValidator extends Validator {
             throw new IllegalStateException("Code has already exist. Please try again");
         }
 
-        if (source.getId() != null) {
-            Source n_source = source_service.getByCode(code, source.getSystemId());
-            if (n_source != null) {
-                throw new IllegalStateException("Code has already exist. Please try again");
-            }
-        }
+//        if (source.getId() != null) {
+//            Source n_source = source_service.getByCode(code, source.getSystemId());
+//            if (n_source != null) {
+//                throw new IllegalStateException("Code has already exist. Please try again");
+//            }
+//        }
 
         return this;
     }
