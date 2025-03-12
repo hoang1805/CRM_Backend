@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
@@ -154,5 +156,15 @@ public class AccountProductService {
 
 //        System.out.println(String.format("ipp: %d, page: %d, account_id: %s, query: %s, start: %d, end: %d", ipp, page, account_id, query, start, end));
 
+    }
+
+    public Double getTotal(Long account_id) {
+        List<AccountProduct> list = account_product_repository.findByAccountId(account_id);
+        Double total = 0.0;
+        for (AccountProduct ap : list) {
+            total += ap.getTotal();
+        }
+
+        return total;
     }
 }

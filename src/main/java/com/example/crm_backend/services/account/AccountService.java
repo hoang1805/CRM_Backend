@@ -3,14 +3,18 @@ package com.example.crm_backend.services.account;
 import com.example.crm_backend.dtos.account.AccountDTO;
 import com.example.crm_backend.entities.account.Account;
 import com.example.crm_backend.entities.account.AccountValidator;
+import com.example.crm_backend.entities.account.product.AccountProduct;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.enums.Role;
+import com.example.crm_backend.events.AccountEvent;
 import com.example.crm_backend.repositories.AccountRepository;
 import com.example.crm_backend.repositories.UserRepository;
+import com.example.crm_backend.services.FeedbackService;
 import com.example.crm_backend.services.SearchEngine;
 import com.example.crm_backend.utils.ObjectMapper;
 import com.example.crm_backend.utils.Timer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,11 +32,24 @@ public class AccountService {
 
     private final SearchEngine search_engine;
 
+    private final FeedbackService feedback_service;
+
+    private final AccountProductService account_product_service;
+
+    private final ApplicationEventPublisher event_publisher;
+
     @Autowired
-    public AccountService(AccountRepository account_repository, UserRepository user_repository, SearchEngine searchEngine) {
+    public AccountService(AccountRepository account_repository, UserRepository user_repository, SearchEngine searchEngine, FeedbackService feedbackService, AccountProductService accountProductService, ApplicationEventPublisher eventPublisher) {
         this.account_repository = account_repository;
         this.user_repository = user_repository;
         search_engine = searchEngine;
+        feedback_service = feedbackService;
+        account_product_service = accountProductService;
+        event_publisher = eventPublisher;
+    }
+
+    public SearchEngine getSearchEngine() {
+        return search_engine;
     }
 
     public Page<Account> paginate(int ipp, int page, String query, int relationship_id ){
@@ -51,6 +68,7 @@ public class AccountService {
         return account_repository.searchAccounts(query, user.getSystemId(), 20L);
     }
 
+    @Transactional
     public Account createAccount(AccountDTO data, User creator) {
         Account account = new Account();
         ObjectMapper.mapAll(data, account);
@@ -62,8 +80,9 @@ public class AccountService {
         account.setCreatedAt(Timer.now());
         account.setSystemId(creator.getSystemId());
 
-        return account_repository.save(account);
-//        return account;
+        account = account_repository.save(account);
+        event_publisher.publishEvent(AccountEvent.created(account, this));
+        return account;
     }
 
     public boolean isExist(Account account) {
@@ -88,11 +107,12 @@ public class AccountService {
 
     @Transactional
     public void deleteAccounts(List<Long> ids) {
-//        List<Account> accounts = account_repository.findAllById(ids);
-//        for (Account account : accounts) {
-//            account_repository.delete(account);
-//        }
+        List<Account> accounts = account_repository.findAllById(ids);
         account_repository.deleteAllByIdInBatch(ids);
+        for (Account account : accounts) {
+            event_publisher.publishEvent(AccountEvent.deleted(account, this));
+        }
+
     }
 
     public List<Account> getByIds(List<Long> ids) {
@@ -103,6 +123,7 @@ public class AccountService {
         return account_repository.getReferenceById(id);
     }
 
+    @Transactional
     public Account edit(Long account_id, AccountDTO account_dto) {
         Account account = getAccount(account_id);
         if (account == null) {
@@ -134,11 +155,20 @@ public class AccountService {
             throw new IllegalStateException(e.getMessage());
         }
 
-        return account_repository.save(account);
+        account = account_repository.save(account);
+        event_publisher.publishEvent(AccountEvent.edited(account, this));
+        return account;
     }
 
+    @Transactional
     public void deleteAccount(Long id) {
+        Account account = getAccount(id);
+        if (account == null) {
+            return;
+        }
+
         account_repository.deleteById(id);
+        event_publisher.publishEvent(AccountEvent.deleted(account, this));
     }
 
     public List<Account> loadAccounts(List<Long> account_ids) {
@@ -226,7 +256,9 @@ public class AccountService {
         }
 
         try {
-            return account_repository.saveAll(refine_accounts).size();
+            int success = account_repository.saveAll(refine_accounts).size();
+            event_publisher.publishEvent(AccountEvent.imported(this));
+            return success;
         } catch (Exception e) {
             if (!ignore_error) {
                 throw new IllegalStateException(e.getMessage());
@@ -234,5 +266,29 @@ public class AccountService {
         }
 
         return 0;
+    }
+
+    public Long getLastContact(Long account_id) {
+        if (account_id == null) {
+            return 0L;
+        }
+
+        return feedback_service.getLastByAccount(account_id);
+    }
+
+    public Long countContacts(Long account_id) {
+        if (account_id == null) {
+            return 0L;
+        }
+
+        return feedback_service.countContact(account_id);
+    }
+
+    public Double getTotalValue(Long account_id) {
+        if (account_id == null) {
+            return 0.0;
+        }
+
+        return account_product_service.getTotal(account_id);
     }
 }

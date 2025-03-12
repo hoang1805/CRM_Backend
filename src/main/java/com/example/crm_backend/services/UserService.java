@@ -7,11 +7,13 @@ import com.example.crm_backend.entities.system.System;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.entities.user.UserValidator;
 import com.example.crm_backend.enums.Role;
+import com.example.crm_backend.events.UserEvent;
 import com.example.crm_backend.repositories.UserRepository;
 import com.example.crm_backend.utils.Encoder;
 import com.example.crm_backend.utils.ObjectMapper;
 import com.example.crm_backend.utils.Timer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,10 +32,20 @@ public class UserService {
 
     private final SystemService system_service;
 
+    private final SearchEngine search_engine;
+
+    private final ApplicationEventPublisher event_publisher;
+
     @Autowired
-    public UserService(UserRepository user_repository, SystemService systemService) {
+    public UserService(UserRepository user_repository, SystemService systemService, SearchEngine searchEngine, ApplicationEventPublisher eventPublisher) {
         this.user_repository = user_repository;
         system_service = systemService;
+        search_engine = searchEngine;
+        event_publisher = eventPublisher;
+    }
+
+    public SearchEngine getSearchEngine() {
+        return search_engine;
     }
 
     public List<User> getUsers() {
@@ -70,6 +82,7 @@ public class UserService {
         return user_repository.countBySystemId(system_id);
     }
 
+    @Transactional
     public User createUser(UserDTO dto, User creator) {
         Long system_id = creator.getSystemId();
         if (creator.getRole() == Role.SUPER_ADMIN) {
@@ -99,7 +112,11 @@ public class UserService {
         user.setLastUpdate(Timer.now());
         user.setCreatedAt(Timer.now());
         user.setCreatorId(creator.getId());
-        return user_repository.save(user);
+
+        user = user_repository.save(user);
+        event_publisher.publishEvent(UserEvent.created(user, this));
+
+        return user;
     }
 
     @Transactional
@@ -109,9 +126,13 @@ public class UserService {
             throw new IllegalStateException("User does not exist");
         }
 
+        User user = getUser(id);
         user_repository.deleteById(id);
+
+        event_publisher.publishEvent(UserEvent.deleted(user, this));
     }
 
+    @Transactional
     public User updateUser(Long user_id, UserDTO userDTO) {
         User user = getUser(user_id);
 
@@ -138,12 +159,17 @@ public class UserService {
             UserValidator validator = new UserValidator(user, this);
             validator.validate();
             user.setLastUpdate(Timer.now());
+
+            user = user_repository.save(user);
+            event_publisher.publishEvent(UserEvent.edited(user, this));
+
+            return user;
         } catch (Exception ex) {
             throw new IllegalStateException(ex.getMessage());
         }
-        return user_repository.save(user);
     }
 
+    @Transactional
     public User updateUserPassword(Long user_id, UserPasswordDTO userDTO) {
         if (userDTO.getOldPassword() == null || userDTO.getNewPassword() == null || userDTO.getConfirmPassword() == null) {
             throw new IllegalStateException("Some password fields are empty");
@@ -173,10 +199,14 @@ public class UserService {
 
             user.setPassword(Encoder.hashPassword(user.getPassword()));
             user.setLastUpdate(Timer.now());
+
+            user = user_repository.save(user);
+            event_publisher.publishEvent(UserEvent.edited(user, this));
+
+            return user;
         } catch (Exception ex) {
             throw new IllegalStateException(ex.getMessage());
         }
-        return user_repository.save(user);
     }
 
     public Page<User> paginate(int ipp, int page) {
@@ -206,6 +236,7 @@ public class UserService {
         return user_repository.searchUsers(query, current_user.getSystemId());
     }
 
+    @Transactional
     public User grantManager(Long id) {
         User user = getUser(id);
         if (user == null) {
@@ -218,9 +249,14 @@ public class UserService {
 
         user.setRole(Role.MANAGER);
         user.setLastUpdate(Timer.now());
-        return user_repository.save(user);
+
+        user = user_repository.save(user);
+        event_publisher.publishEvent(UserEvent.edited(user, this));
+
+        return user;
     }
 
+    @Transactional
     public User grantStaff(Long id) {
         User user = getUser(id);
         if (user == null) {
@@ -233,9 +269,14 @@ public class UserService {
 
         user.setRole(Role.STAFF);
         user.setLastUpdate(Timer.now());
-        return user_repository.save(user);
+
+        user = user_repository.save(user);
+        event_publisher.publishEvent(UserEvent.edited(user, this));
+
+        return user;
     }
 
+    @Transactional
     public User grantAdmin(Long id) {
         User user = getUser(id);
         if (user == null) {
@@ -248,9 +289,14 @@ public class UserService {
 
         user.setRole(Role.ADMIN);
         user.setLastUpdate(Timer.now());
-        return user_repository.save(user);
+
+        user = user_repository.save(user);
+        event_publisher.publishEvent(UserEvent.edited(user, this));
+
+        return user;
     }
 
+    @Transactional
     public User resetPassword(Long id) {
         User user = getUser(id);
         if (user == null) {
@@ -263,6 +309,10 @@ public class UserService {
 
         user.setPassword(Encoder.hashPassword("123456"));
         user.setLastUpdate(Timer.now());
-        return user_repository.save(user);
+
+        user = user_repository.save(user);
+        event_publisher.publishEvent(UserEvent.edited(user, this));
+
+        return user;
     }
 }

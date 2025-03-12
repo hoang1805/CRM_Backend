@@ -74,4 +74,25 @@ public class FeedbackService {
 
         return feedback_repository.searchFeedbackByAccount(accountId, query, start, end, request);
     }
+
+    public Long getLastByAccount(Long account_id) {
+        if (account_id == null) {
+            return 0L;
+        }
+
+        Feedback feedback = feedback_repository.getLastByAccount(account_id);
+        if (feedback == null) {
+            return 0L;
+        }
+
+        return feedback.getCreatedAt();
+    }
+
+    public Long countContact(Long account_id) {
+        if (account_id == null) {
+            return 0L;
+        }
+
+        return feedback_repository.countContact(account_id);
+    }
 }

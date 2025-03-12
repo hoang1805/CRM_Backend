@@ -1,7 +1,6 @@
 package com.example.crm_backend.controllers;
 
 import com.example.crm_backend.dtos.account.AccountDTO;
-import com.example.crm_backend.dtos.UserDTO;
 import com.example.crm_backend.entities.account.Account;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.enums.Role;
@@ -16,7 +15,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -27,10 +25,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping(path = "api/account")
@@ -70,7 +66,18 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("code", "FORBIDDEN","message", "You do not have access"));
         }
 
-        return ResponseEntity.ok(Map.of("account", account.release(current_user)));
+        try {
+            return ResponseEntity.ok(Map.of(
+                    "account", account.release(current_user),
+                    "last_contact", account_service.getLastContact(id),
+                    "number_contacts", account_service.countContacts(id),
+                    "total", account_service.getTotalValue(id)
+            ));
+        } catch (Exception e) {
+            throw e;
+        }
+
+
     }
 
     @GetMapping("/list")

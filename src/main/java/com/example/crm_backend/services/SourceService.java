@@ -5,11 +5,14 @@ import com.example.crm_backend.entities.source.Source;
 import com.example.crm_backend.entities.source.SourceValidator;
 import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.enums.Role;
+import com.example.crm_backend.events.SourceEvent;
 import com.example.crm_backend.repositories.SourceRepository;
 import com.example.crm_backend.utils.ObjectMapper;
 import com.example.crm_backend.utils.Timer;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,9 +25,15 @@ public class SourceService {
 
     private final SystemService system_service;
 
-    public SourceService(SourceRepository source_repository, SystemService systemService) {
+    private final SearchEngine search_engine;
+
+    private final ApplicationEventPublisher event_publisher;
+
+    public SourceService(SourceRepository source_repository, SystemService systemService, SearchEngine searchEngine, ApplicationEventPublisher eventPublisher) {
         this.source_repository = source_repository;
         system_service = systemService;
+        this.search_engine = searchEngine;
+        event_publisher = eventPublisher;
     }
 
     public List<Source> getAll() {
@@ -56,6 +65,7 @@ public class SourceService {
         return id != null && source_repository.existsById(id);
     }
 
+    @Transactional
     public Source create(SourceDTO source_DTO, User creator) {
         Source source = new Source();
         ObjectMapper.mapAll(source_DTO, source);
@@ -71,13 +81,17 @@ public class SourceService {
             source.setCreatorId(creator.getId());
             source.setCreatedAt(Timer.now());
             source.setLastUpdate(Timer.now());
+
+            source = source_repository.save(source);
+            event_publisher.publishEvent(SourceEvent.created(source, this));
+
+            return source;
         } catch (Exception e) {
             throw new IllegalStateException(e.getMessage());
         }
-
-        return source_repository.save(source);
     }
 
+    @Transactional
     public Source edit(Long source_id, SourceDTO source_DTO) {
         Source source = getSource(source_id);
         if (source == null) {
@@ -105,19 +119,26 @@ public class SourceService {
             }
             source.setCode(new_source.getCode());
             source.setLastUpdate(Timer.now());
+
+            source = source_repository.save(source);
+            event_publisher.publishEvent(SourceEvent.edited(source, this));
+
+            return source;
         } catch (Exception e) {
             throw new IllegalStateException(e.getMessage());
         }
-
-        return source_repository.save(source);
     }
 
+    @Transactional
     public void delete(Long id) {
         if (id == null || !isExistById(id)) {
             throw new IllegalStateException("Invalid source. Please try again");
         }
 
+        Source source = getSource(id);
         source_repository.deleteById(id);
+
+        event_publisher.publishEvent(SourceEvent.deleted(source, this));
     }
 
     public List<Source> search(String query, User user) {
@@ -126,5 +147,9 @@ public class SourceService {
         }
 
         return source_repository.searchSources(query, user.getSystemId());
+    }
+
+    public SearchEngine getSearchEngine() {
+        return search_engine;
     }
 }

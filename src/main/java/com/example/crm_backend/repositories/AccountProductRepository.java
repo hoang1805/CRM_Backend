@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface AccountProductRepository extends JpaRepository<AccountProduct, Long> {
     @Query(value = "SELECT * FROM account_products " +
             "WHERE account_id = :account_id " +
@@ -39,4 +41,6 @@ public interface AccountProductRepository extends JpaRepository<AccountProduct, 
     Page<AccountProduct> searchProducts(@Param("account_id") String account_id, @Param("query") String query, @Param("start") Long start, @Param("end") Long end, @Param("system_id") Long system_id, Pageable pageable);
 
     void deleteBySystemId(Long system_id);
+
+    List<AccountProduct> findByAccountId(Long accountId);
 }

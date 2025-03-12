@@ -35,16 +35,24 @@ public class SearchEngine {
         cache = new HashMap<>();
     }
 
-    public List<?> getData(String key) {
+    public List<?> get(String key) {
         return cache.get(key);
     }
 
-    public void addData(String key, List<?> list) {
+    public void add(String key, List<?> list) {
         cache.put(key, list);
     }
 
     public boolean isExist(String key) {
         return cache.containsKey(key);
+    }
+
+    public void remove(String key) {
+        if (!isExist(key)) {
+            return;
+        }
+
+        cache.remove(key);
     }
 
     public boolean equalsIgnoreCase(String a, String b) {
@@ -53,10 +61,10 @@ public class SearchEngine {
 
     public Account searchAccount(String query, long systemId) {
         if (!isExist("accounts")) {
-            addData("accounts", account_repository.findAll());
+            add("accounts", account_repository.findAll());
         }
 
-        List<Account> accounts = (List<Account>) getData("accounts");
+        List<Account> accounts = (List<Account>) get("accounts");
         for (Account account : accounts) {
             if (!Objects.equals(account.getSystemId(), systemId)) {
                 continue;
@@ -80,10 +88,10 @@ public class SearchEngine {
 
     public User searchUser(String query, Long systemId) {
         if (!isExist("users")) {
-            addData("users", user_repository.findAll());
+            add("users", user_repository.findAll());
         }
 
-        List<User> users = (List<User>) getData("users");
+        List<User> users = (List<User>) get("users");
         for (User user : users) {
             if (!Objects.equals(user.getSystemId(), systemId)) {
                 continue;
@@ -117,10 +125,10 @@ public class SearchEngine {
 
     public Source searchSource(String query, Long systemId) {
         if (!isExist("sources")) {
-            addData("sources", source_repository.findAll());
+            add("sources", source_repository.findAll());
         }
 
-        List<Source> sources = (List<Source>) getData("sources");
+        List<Source> sources = (List<Source>) get("sources");
         for (Source source : sources) {
             if (!Objects.equals(source.getSystemId(), systemId)) {
                 continue;
@@ -135,10 +143,10 @@ public class SearchEngine {
 
     public Source searchSourceById(String query, Long systemId) {
         if (!isExist("sources")) {
-            addData("sources", source_repository.findAll());
+            add("sources", source_repository.findAll());
         }
 
-        List<Source> sources = (List<Source>) getData("sources");
+        List<Source> sources = (List<Source>) get("sources");
         for (Source source : sources) {
             if (!Objects.equals(source.getSystemId(), systemId)) {
                 continue;
@@ -154,10 +162,10 @@ public class SearchEngine {
 
     public Relationship searchRelationship(String query, Long systemId) {
         if (!isExist("relationships")) {
-            addData("relationships", relationship_repository.findAll());
+            add("relationships", relationship_repository.findAll());
         }
 
-        List<Relationship> relationships = (List<Relationship>) getData("relationships");
+        List<Relationship> relationships = (List<Relationship>) get("relationships");
         for (Relationship relationship : relationships) {
             if (!Objects.equals(relationship.getSystemId(), systemId)) {
                 continue;
@@ -183,14 +191,14 @@ public class SearchEngine {
 
     public Relationship searchRelationshipById(String query, Long systemId) {
         if (!isExist("relationships")) {
-            addData("relationships", relationship_repository.findAll());
+            add("relationships", relationship_repository.findAll());
         }
 
         if (query == null || query.isEmpty()) {
             return null;
         }
 
-        List<Relationship> relationships = (List<Relationship>) getData("relationships");
+        List<Relationship> relationships = (List<Relationship>) get("relationships");
         for (Relationship relationship : relationships) {
             if (!Objects.equals(relationship.getSystemId(), systemId)) {
                 continue;
