@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class SearchEngine {
@@ -57,127 +58,146 @@ public class SearchEngine {
 
         List<Account> accounts = (List<Account>) getData("accounts");
         for (Account account : accounts) {
-            if (account.getSystemId().equals(systemId)) {
+            if (!Objects.equals(account.getSystemId(), systemId)) {
+                continue;
+            }
 
-                if (account.getCode().equals(query)) {
+            if (account.getCode().equals(query)) {
+                return account;
+            }
+
+            try {
+                Long id = Long.parseLong(query);
+                if (account.getId().equals(id)) {
                     return account;
                 }
-
-                try {
-                    Long id = Long.parseLong(query);
-                    if (account.getId().equals(id)) {
-                        return account;
-                    }
-                } catch (Exception _) {
-                }
+            } catch (Exception _) {
             }
         }
 
         return null;
     }
 
-    public User searchUser(String query, long systemId) {
+    public User searchUser(String query, Long systemId) {
         if (!isExist("users")) {
             addData("users", user_repository.findAll());
         }
 
         List<User> users = (List<User>) getData("users");
         for (User user : users) {
-            if (user.getSystemId().equals(systemId)) {
-                if (user.getUsername().equals(query)) {
+            if (!Objects.equals(user.getSystemId(), systemId)) {
+                continue;
+            }
+
+            if (user.getUsername().equals(query)) {
+                return user;
+            }
+
+            try {
+                Long id = Long.parseLong(query);
+                if (user.getId().equals(id)) {
                     return user;
                 }
-
-                try {
-                    Long id = Long.parseLong(query);
-                    if (user.getId().equals(id)) {
-                        return user;
-                    }
-                } catch (Exception _) {
-                }
+            } catch (Exception _) {
             }
         }
 
         for (User user : users) {
-            if (user.getSystemId().equals(systemId)) {
-                if (equalsIgnoreCase(user.getName(), query)) {
-                    return user;
-                }
+            if (!Objects.equals(user.getSystemId(), systemId)) {
+                continue;
+            }
+
+            if (equalsIgnoreCase(user.getName(), query)) {
+                return user;
             }
         }
 
         return null;
     }
 
-    public Source searchSource(String query, long systemId) {
+    public Source searchSource(String query, Long systemId) {
         if (!isExist("sources")) {
             addData("sources", source_repository.findAll());
         }
 
         List<Source> sources = (List<Source>) getData("sources");
         for (Source source : sources) {
-            if (source.getSystemId().equals(systemId)) {
-                if (source.getCode().equals(query)) {
-                    return source;
-                }
+            if (!Objects.equals(source.getSystemId(), systemId)) {
+                continue;
+            }
+
+            if (source.getCode().equals(query)) {
+                return source;
             }
         }
         return null;
     }
 
-    public Source searchSourceById(String query, long systemId) {
+    public Source searchSourceById(String query, Long systemId) {
         if (!isExist("sources")) {
             addData("sources", source_repository.findAll());
         }
 
         List<Source> sources = (List<Source>) getData("sources");
         for (Source source : sources) {
-            if (source.getSystemId().equals(systemId)) {
-                if (source.getId().equals(Long.parseLong(query))) {
-                    return source;
-                }
+            if (!Objects.equals(source.getSystemId(), systemId)) {
+                continue;
+            }
+
+            if (source.getId().equals(Long.parseLong(query))) {
+                return source;
             }
         }
 
         return null;
     }
 
-    public Relationship searchRelationship(String query, long systemId) {
+    public Relationship searchRelationship(String query, Long systemId) {
         if (!isExist("relationships")) {
             addData("relationships", relationship_repository.findAll());
         }
 
         List<Relationship> relationships = (List<Relationship>) getData("relationships");
         for (Relationship relationship : relationships) {
-            if (relationship.getSystemId().equals(systemId)) {
-                if (relationship.getName().equals(query)) {
-                    return relationship;
-                }
+            if (!Objects.equals(relationship.getSystemId(), systemId)) {
+                continue;
+            }
+
+            if (relationship.getName().equals(query)) {
+                return relationship;
             }
         }
 
         for (Relationship relationship : relationships) {
-            if (relationship.getSystemId().equals(systemId)) {
-                if (equalsIgnoreCase(relationship.getName(), query)) {
-                    return relationship;
-                }
+            if (!Objects.equals(relationship.getSystemId(), systemId)) {
+                continue;
+            }
+
+            if (equalsIgnoreCase(relationship.getName(), query)) {
+                return relationship;
             }
         }
 
         return null;
     }
 
-    public Relationship searchRelationshipById(String query, long systemId) {
+    public Relationship searchRelationshipById(String query, Long systemId) {
         if (!isExist("relationships")) {
             addData("relationships", relationship_repository.findAll());
         }
 
+        if (query == null || query.isEmpty()) {
+            return null;
+        }
+
         List<Relationship> relationships = (List<Relationship>) getData("relationships");
         for (Relationship relationship : relationships) {
-            if (relationship.getSystemId().equals(systemId)) {
-                if (relationship.getId().equals(Long.parseLong(query))) {
-                    return relationship;
-                }
+            if (!Objects.equals(relationship.getSystemId(), systemId)) {
+                continue;
+            }
+
+            if (relationship.getId().equals(Long.parseLong(query))) {
+                return relationship;
             }
         }
 

@@ -174,7 +174,7 @@ public class AccountService {
             }
 
             if (!override && !ignore_error) {
-                throw new IllegalStateException(dto.getCode() + " already exists");
+                throw new IllegalStateException("Account with code: " + dto.getCode() + " already exists");
             }
 
             if (!override) {

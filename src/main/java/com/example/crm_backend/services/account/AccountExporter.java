@@ -7,6 +7,7 @@ import com.example.crm_backend.entities.user.User;
 import com.example.crm_backend.repositories.AccountRepository;
 import com.example.crm_backend.services.SearchEngine;
 import com.example.crm_backend.utils.excel.ExcelExporter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,7 @@ public class AccountExporter {
 
     private final AccountRepository account_repository;
 
+    @Autowired
     public AccountExporter(SearchEngine searchEngine, AccountRepository accountRepository) {
         search_engine = searchEngine;
         account_repository = accountRepository;
@@ -76,7 +78,11 @@ public class AccountExporter {
             row.add(null);
         }
 
-        Relationship relationship = search_engine.searchRelationshipById(String.valueOf(account.getRelationshipId()), systemId);
+        String relationship_id = null;
+        if (account.getRelationshipId() != null) {
+            relationship_id = String.valueOf(account.getRelationshipId());
+        }
+        Relationship relationship = search_engine.searchRelationshipById(relationship_id, systemId);
         if (relationship != null) {
             row.add(relationship.getName());
         } else {
