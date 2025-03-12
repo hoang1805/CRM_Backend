@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
@@ -166,5 +167,28 @@ public class AccountProductService {
         }
 
         return total;
+    }
+
+    public Long countProducts(Long account_id) {
+        if (account_id == null) {
+            return 0L;
+        }
+
+        return (long) account_product_repository.findByAccountId(account_id).size();
+    }
+
+    public Long lastBought(Long account_id) {
+        if (account_id == null) {
+            return 0L;
+        }
+
+        List<AccountProduct> list = account_product_repository.findByAccountId(account_id);
+        list.sort(Comparator.comparing(AccountProduct::getLastUpdate));
+
+        if (list.isEmpty()) {
+            return 0L;
+        }
+
+        return list.getLast().getLastUpdate();
     }
 }

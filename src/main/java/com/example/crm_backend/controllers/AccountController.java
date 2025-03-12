@@ -71,7 +71,9 @@ public class AccountController {
                     "account", account.release(current_user),
                     "last_contact", account_service.getLastContact(id),
                     "number_contacts", account_service.countContacts(id),
-                    "total", account_service.getTotalValue(id)
+                    "total", account_service.getTotalValue(id),
+                    "last_bought", account_service.getLastBought(id),
+                    "number_products", account_service.countProducts(id)
             ));
         } catch (Exception e) {
             throw e;

@@ -293,4 +293,16 @@ public class AccountService {
 
         return account_product_service.getTotal(account_id);
     }
+
+    public Long getLastBought(Long account_id) {
+        return account_product_service.lastBought(account_id);
+    }
+
+    public Long countProducts(Long account_id) {
+        if (account_id == null) {
+            return 0L;
+        }
+
+        return account_product_service.countProducts(account_id);
+    }
 }
