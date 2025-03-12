@@ -57,7 +57,7 @@ public class SearchEngine {
 
         List<Account> accounts = (List<Account>) getData("accounts");
         for (Account account : accounts) {
-            if (account.getSystemId() == systemId) {
+            if (account.getSystemId().equals(systemId)) {
 
                 if (account.getCode().equals(query)) {
                     return account;
@@ -83,7 +83,7 @@ public class SearchEngine {
 
         List<User> users = (List<User>) getData("users");
         for (User user : users) {
-            if (user.getSystemId() == systemId) {
+            if (user.getSystemId().equals(systemId)) {
                 if (user.getUsername().equals(query)) {
                     return user;
                 }
@@ -99,7 +99,7 @@ public class SearchEngine {
         }
 
         for (User user : users) {
-            if (user.getSystemId() == systemId) {
+            if (user.getSystemId().equals(systemId)) {
                 if (equalsIgnoreCase(user.getName(), query)) {
                     return user;
                 }
@@ -116,7 +116,7 @@ public class SearchEngine {
 
         List<Source> sources = (List<Source>) getData("sources");
         for (Source source : sources) {
-            if (source.getSystemId() == systemId) {
+            if (source.getSystemId().equals(systemId)) {
                 if (source.getCode().equals(query)) {
                     return source;
                 }
@@ -132,7 +132,7 @@ public class SearchEngine {
 
         List<Source> sources = (List<Source>) getData("sources");
         for (Source source : sources) {
-            if (source.getSystemId() == systemId) {
+            if (source.getSystemId().equals(systemId)) {
                 if (source.getId().equals(Long.parseLong(query))) {
                     return source;
                 }
@@ -149,7 +149,7 @@ public class SearchEngine {
 
         List<Relationship> relationships = (List<Relationship>) getData("relationships");
         for (Relationship relationship : relationships) {
-            if (relationship.getSystemId() == systemId) {
+            if (relationship.getSystemId().equals(systemId)) {
                 if (relationship.getName().equals(query)) {
                     return relationship;
                 }
@@ -157,7 +157,7 @@ public class SearchEngine {
         }
 
         for (Relationship relationship : relationships) {
-            if (relationship.getSystemId() == systemId) {
+            if (relationship.getSystemId().equals(systemId)) {
                 if (equalsIgnoreCase(relationship.getName(), query)) {
                     return relationship;
                 }
@@ -174,7 +174,7 @@ public class SearchEngine {
 
         List<Relationship> relationships = (List<Relationship>) getData("relationships");
         for (Relationship relationship : relationships) {
-            if (relationship.getSystemId() == systemId) {
+            if (relationship.getSystemId().equals(systemId)) {
                 if (relationship.getId().equals(Long.parseLong(query))) {
                     return relationship;
                 }
