@@ -43,11 +43,15 @@ public class AccountImporter {
                     continue;
                 }
 
+                if (this.isEmptyRow(data.get(i))) {
+                    continue;
+                }
+
                 try {
                     accounts.add(readRow(data.get(i), systemId));
                 } catch (Exception e) {
                     if (!ignore_error) {
-                        throw new IllegalStateException("Có lỗi ở dòng " + i + ": " + e.getMessage());
+                        throw new IllegalStateException("Có lỗi ở dòng " + (i + 1) + ": " + e.getMessage());
                     }
                 }
             }
@@ -57,6 +61,19 @@ public class AccountImporter {
             throw new RuntimeException(e.getMessage());
         }
 
+    }
+
+    private boolean isEmptyRow(Map<String, String> row) {
+        for (String column : account_columns) {
+            String value = row.get(column);
+            if (value == null || value.isEmpty()) {
+                continue;
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     public AccountDTO readRow(Map<String, String> row, long systemId) {
@@ -81,7 +98,7 @@ public class AccountImporter {
 
     private void readName(AccountDTO dto, String name) {
         if (name == null || name.isEmpty()) {
-            throw new IllegalStateException("Name is empty");
+            throw new IllegalStateException("Name is empty: " + name);
         }
         dto.setName(name);
     }

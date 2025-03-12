@@ -326,8 +326,8 @@ public class AccountController {
                     .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                     .body(resource);
         } catch (Exception e) {
-            throw e;
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//            throw e;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
