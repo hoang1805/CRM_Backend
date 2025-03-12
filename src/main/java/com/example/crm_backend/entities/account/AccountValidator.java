@@ -38,16 +38,24 @@ public class AccountValidator extends Validator {
         return this;
     }
 
+    private AccountValidator validCode() {
+        if (account.getCode().isEmpty()) {
+            throw new IllegalStateException("Account code is empty. Please try again");
+        }
+
+        if (account.getId() == null && account_service.isExist(account)) {
+            throw new IllegalStateException("Account code already exists. Please try again");
+        }
+
+        return this;
+    }
+
     public void validate(){
         if (account.getName().isEmpty()) {
             throw new IllegalStateException("Account name is empty. Please try again");
         }
 
-        if (account.getCode().isEmpty()) {
-            throw new IllegalStateException("Account code is empty. Please try again");
-        }
-
-        validEmail().validPhone();
+        validCode().validEmail().validPhone();
 
         if (account.getId() == null && account_service.isExist(account)) {
             throw new IllegalStateException("Account code has already existed");

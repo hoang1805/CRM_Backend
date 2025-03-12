@@ -72,13 +72,14 @@ public class AccountService {
     public Account createAccount(AccountDTO data, User creator) {
         Account account = new Account();
         ObjectMapper.mapAll(data, account);
+        account.setSystemId(creator.getSystemId());
+
         AccountValidator validator = new AccountValidator(account, this);
         validator.validate();
 
         account.setCreatorId(creator.getId());
         account.setLastUpdate(Timer.now());
         account.setCreatedAt(Timer.now());
-        account.setSystemId(creator.getSystemId());
 
         account = account_repository.save(account);
         event_publisher.publishEvent(AccountEvent.created(account, this));
@@ -131,9 +132,10 @@ public class AccountService {
         }
 
         Account new_account = new Account();
+        new_account.setSystemId(account.getSystemId());
         ObjectMapper.mapAll(account_dto, new_account);
         if (!Objects.equals(account.getCode(), new_account.getCode()) && isExist(new_account)) {
-            throw new IllegalStateException("Account code has been already existed. Please try again");
+            throw new IllegalStateException("Account code already existed. Please try again");
         }
         account.setName(new_account.getName());
         account.setPhone(new_account.getPhone());
